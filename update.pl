@@ -45,5 +45,6 @@ close $fh;
 
 `cp ssh_config $golang`;
 `cp dockerd-entrypoint.sh $golang`;
+`cp docker-compose.test.yml $golang`;
 
 1;
