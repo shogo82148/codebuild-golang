@@ -21,6 +21,8 @@ ENV DOCKER_BUCKET="download.docker.com" \
     DOCKER_SHA256="c9959e42b637fb7362899ac1d1aeef2a966fa0ea85631da91f4c4a7a9ec29644" \
     DIND_COMMIT="3b5fac462d21ca164b3778647420016315289034" \    
     GITVERSION_VERSION="4.0.0" \
+    JQ_VERSION="1.6" \
+    JQ_SHA256="af986793a515d500ab2d35f8d2aecd656e764504b789b66d7e1a0b727a124c44" \
     DEBIAN_FRONTEND="noninteractive" \
     SRC_DIR="/usr/src"
 
@@ -42,7 +44,7 @@ RUN set -ex \
     && ssh-keyscan -t rsa,dsa -H bitbucket.org >> ~/.ssh/known_hosts \
     && chmod 600 ~/.ssh/known_hosts \
     && apt-get install -y --no-install-recommends \
-       wget python3 python3-dev python3-pip python3-setuptools fakeroot ca-certificates jq \
+       wget python3 python3-dev python3-pip python3-setuptools fakeroot ca-certificates \
        netbase gnupg dirmngr bzr mercurial procps \
        tar gzip zip autoconf automake \
        bzip2 file g++ gcc imagemagick \
@@ -64,7 +66,10 @@ RUN set -ex \
        tk gettext gettext-base libapr1 libaprutil1 xvfb expect \
     && apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF \
     && rm -rf /var/lib/apt/lists/* \
-    && apt-get clean
+    && apt-get clean \
+    && wget https://github.com/stedolan/jq/releases/download/jq-${JQ_VERSION}/jq-linux64 -O /usr/local/bin/jq \
+    && echo "$JQ_SHA256 /usr/local/bin/jq" | sha256sum -c - \
+    && chmod +x /usr/local/bin/jq
 
 # Download and set up GitVersion
 RUN set -ex \
