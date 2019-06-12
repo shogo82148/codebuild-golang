@@ -11,9 +11,8 @@ my @versions;
 my $pageToken = "";
 
 do {
-    my $json = decode_json(
-        `curl -fsSL "https://www.googleapis.com/storage/v1/b/golang/o?fields=nextPageToken,items%2Fname&pageToken=$pageToken"`
-    );
+    my $body = `curl -fsSL "https://www.googleapis.com/storage/v1/b/golang/o?fields=nextPageToken,items%2Fname&pageToken=$pageToken"`;
+    my $json = decode_json($body);
     push @versions, map {
         $_->{name} =~ /^go([.0-9]*)[.]src[.]tar[.]gz$/ ? ($1) : ()
     } @{$json->{items}};
