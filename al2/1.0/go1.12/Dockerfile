@@ -1,0 +1,135 @@
+# Copyright 2017-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+#
+# Licensed under the Amazon Software License (the "License"). You may not use this file except in compliance with the License.
+# A copy of the License is located at
+#
+#    http://aws.amazon.com/asl/
+#
+# or in the "license" file accompanying this file.
+# This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, express or implied.
+# See the License for the specific language governing permissions and limitations under the License.
+
+FROM amazonlinux:2
+
+ENV GOLANG_VERSION="1.12.8" \
+ DOCKER_VERSION="18.09.6" \
+ DOCKER_COMPOSE_VERSION="1.24.0"
+
+#****************        Utilities     ********************************************* 
+ENV DOCKER_BUCKET="download.docker.com" \    
+    DOCKER_CHANNEL="stable" \
+    DOCKER_SHA256="1f3f6774117765279fce64ee7f76abbb5f260264548cf80631d68fb2d795bb09" \
+    DIND_COMMIT="3b5fac462d21ca164b3778647420016315289034" \    
+    GITVERSION_VERSION="4.0.0" \
+    DEBIAN_FRONTEND="noninteractive" \
+    SRC_DIR="/usr/src" \
+    EPEL_REPO="https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm" \
+    TRINITY_REPO="https://mirror.ppa.trinitydesktop.org/trinity/trinity/rpm/el7/trinity-r14/RPMS/noarch/trinity-repo-14.0.5-1.el7.noarch.rpm"
+
+# Install git, SSH, and other utilities
+RUN set -ex \
+    && yum install -y openssh-clients \
+    && mkdir ~/.ssh \
+    && touch ~/.ssh/known_hosts \
+    && ssh-keyscan -t rsa,dsa -H github.com >> ~/.ssh/known_hosts \
+    && ssh-keyscan -t rsa,dsa -H bitbucket.org >> ~/.ssh/known_hosts \
+    && chmod 600 ~/.ssh/known_hosts \
+    && yum install -y $EPEL_REPO $TRINITY_REPO \
+    && rpm --import "https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF" \
+    && curl https://download.mono-project.com/repo/centos7-stable.repo | tee /etc/yum.repos.d/mono-centos7-stable.repo \
+    && amazon-linux-extras enable corretto8 \
+    && yum groupinstall -y "Development tools" \
+    && yum install -y wget fakeroot jq \
+       dirmngr bzr mercurial procps-ng \
+       ImageMagick \
+       openssl-devel libdb-devel \
+       libevent-devel libffi-devel GeoIP-devel glib2-devel \
+       libjpeg-devel krb5-server xz-devel \
+       mariadb-devel \
+       ncurses-devel postgresql-devel readline-devel \
+       libsqlite3x-devel libwebp-devel \
+       libxml2-devel libxslt-devel libyaml-devel \
+       e2fsprogs iptables xfsprogs \
+       mono-devel groff \
+       asciidoc cvs cvsps docbook-dtds docbook-style-xsl \
+       perl-DBD-SQLite perl-DBI perl-HTTP-Date \
+       perl-IO-Pty-Easy libserf subversion-perl tcl perl-TimeDate \
+       perl-YAML-LibYAML bzrtools python-configobj \
+       sgml-common xmlto libxslt \
+       tk xorg-x11-server-Xvfb expect parallel rsync
+
+# Install Docker
+RUN set -ex \
+    && curl -fSL "https://${DOCKER_BUCKET}/linux/static/${DOCKER_CHANNEL}/x86_64/docker-${DOCKER_VERSION}.tgz" -o docker.tgz \
+    && echo "${DOCKER_SHA256} *docker.tgz" | sha256sum -c - \
+    && tar --extract --file docker.tgz --strip-components 1  --directory /usr/local/bin/ \
+    && rm docker.tgz \
+    && docker -v \
+# set up subuid/subgid so that "--userns-remap=default" works out-of-the-box
+    && groupadd dockremap \
+    && useradd -g dockremap dockremap \
+    && echo 'dockremap:165536:65536' >> /etc/subuid \
+    && echo 'dockremap:165536:65536' >> /etc/subgid \
+    && wget "https://raw.githubusercontent.com/docker/docker/${DIND_COMMIT}/hack/dind" -O /usr/local/bin/dind \
+    && curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-Linux-x86_64 > /usr/local/bin/docker-compose \
+    && chmod +x /usr/local/bin/dind /usr/local/bin/docker-compose \
+# Ensure docker-compose works
+    && docker-compose version
+
+# https://docs.aws.amazon.com/eks/latest/userguide/install-aws-iam-authenticator.html https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ECS_CLI_installation.html
+RUN curl -sS -o /usr/local/bin/aws-iam-authenticator https://amazon-eks.s3-us-west-2.amazonaws.com/1.11.5/2018-12-06/bin/linux/amd64/aws-iam-authenticator \
+ && curl -sS -o /usr/local/bin/kubectl https://amazon-eks.s3-us-west-2.amazonaws.com/1.11.5/2018-12-06/bin/linux/amd64/kubectl \
+ && curl -sS -o /usr/local/bin/ecs-cli https://s3.amazonaws.com/amazon-ecs-cli/ecs-cli-linux-amd64-latest \
+ && chmod +x /usr/local/bin/kubectl /usr/local/bin/aws-iam-authenticator /usr/local/bin/ecs-cli
+
+VOLUME /var/lib/docker
+
+# Configure SSH
+COPY ssh_config /root/.ssh/config
+
+COPY runtimes.yml /codebuild/image/config/runtimes.yml
+
+COPY dockerd-entrypoint.sh /usr/local/bin/
+
+RUN set -ex \
+    && pip3 install --user aws-sam-cli \
+    && sam --version \
+    && pip3 install awscli boto3
+
+#****************     GO     **********************************************************
+ENV GOLANG_DOWNLOAD_SHA256="bd26cd4962a362ed3c11835bca32c2e131c2ae050304f2c4df9fa6ded8db85d2" \
+    GOPATH="/go" \
+    DEP_VERSION="0.5.1" \
+    DEP_BINARY="dep-linux-amd64"
+
+RUN set -ex \
+    && mkdir -p "$GOPATH/src" "$GOPATH/bin" \
+    && chmod -R 777 "$GOPATH" \
+    && wget "https://dl.google.com/go/go$GOLANG_VERSION.linux-amd64.tar.gz" -O /tmp/golang.tar.gz \
+    && echo "$GOLANG_DOWNLOAD_SHA256 /tmp/golang.tar.gz" | sha256sum -c - \
+    && tar -xzf /tmp/golang.tar.gz -C /usr/local \
+    && rm -fr /tmp/* /var/tmp/* \
+    && wget "https://github.com/golang/dep/releases/download/v$DEP_VERSION/$DEP_BINARY" -O "$GOPATH/bin/dep" \
+    && chmod +x "$GOPATH/bin/dep"
+
+ENV PATH="$GOPATH/bin:/usr/local/go/bin:$PATH"
+#****************     END GO     **********************************************************
+
+# Download and set up GitVersion
+ENV LIBGIT2_PKG="https://rpmfind.net/linux/centos/7.6.1810/extras/x86_64/Packages/libgit2-0.26.6-1.el7.x86_64.rpm"
+
+RUN set -ex \
+    && yum install -y $LIBGIT2_PKG \
+    && wget "https://github.com/GitTools/GitVersion/releases/download/v${GITVERSION_VERSION}/GitVersion-bin-coreclr-v${GITVERSION_VERSION}.zip" -O /tmp/GitVersion_${GITVERSION_VERSION}.zip \
+    && mkdir -p /usr/local/GitVersion_${GITVERSION_VERSION} \
+    && unzip /tmp/GitVersion_${GITVERSION_VERSION}.zip -d /usr/local/GitVersion_${GITVERSION_VERSION} \
+    && rm /tmp/GitVersion_${GITVERSION_VERSION}.zip \
+    && ln -s /usr/lib64/libgit2.so.0.26.6 /usr/lib64/libgit2-15e1193.so \
+    && echo "dotnet /usr/local/GitVersion_${GITVERSION_VERSION}/GitVersion.dll \$@" >> /usr/local/bin/gitversion \
+    && chmod +x /usr/local/bin/gitversion
+
+# Cleanup
+RUN set -ex \
+    && yum clean all
+
+ENTRYPOINT ["dockerd-entrypoint.sh"]
