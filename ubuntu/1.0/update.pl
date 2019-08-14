@@ -45,6 +45,5 @@ close $fh;
 
 `cp template/ssh_config $output`;
 `cp template/dockerd-entrypoint.sh $output`;
-`cp template/docker-compose.test.yml $output`;
 
 1;
