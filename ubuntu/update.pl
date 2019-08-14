@@ -32,19 +32,23 @@ my $latest = pop @versions;
 my $sha256 = `curl -fsSL "https://storage.googleapis.com/golang/go${latest}.linux-amd64.tar.gz.sha256"`;
 mkdir $output unless -d $output;
 
-open my $fh, '<', 'template/Dockerfile' or die $!;
-my $doc = do { local $/ = undef; <$fh>; };
-close $fh;
+sub execute_template {
+    my ($input, $output) = @_;
+    open my $fh, '<', $input or die $!;
+    my $doc = do { local $/ = undef; <$fh>; };
+    close $fh;
 
-$doc =~ s/%%GOLANG_VERSION%%/$latest/;
-$doc =~ s/%%GOLANG_DOWNLOAD_SHA256%%/$sha256/;
+    $doc =~ s/%%GOLANG_VERSION%%/$latest/;
+    $doc =~ s/%%GOLANG_DOWNLOAD_SHA256%%/$sha256/;
 
-open $fh, '>', "$output/Dockerfile" or die $!;
-print $fh $doc;
-close $fh;
+    open $fh, '>', "$output" or die $!;
+    print $fh $doc;
+    close $fh;
+}
 
-`cp template/ssh_config $output`;
-`cp template/dockerd-entrypoint.sh $output`;
-`cp template/docker-compose.test.yml $output`;
+execute_template 'template/Dockerfile', "$output/Dockerfile";
+execute_template 'template/ssh_config', "$output/ssh_config";
+execute_template 'template/dockerd-entrypoint.sh', "$output/dockerd-entrypoint.sh";
+execute_template 'template/runtimes.yml', "$output/runtimes.yml";
 
 1;

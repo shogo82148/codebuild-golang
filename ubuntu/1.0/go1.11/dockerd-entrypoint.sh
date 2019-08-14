@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 set -e
 
 /usr/local/bin/dockerd \
@@ -16,7 +16,7 @@ do
 		echo 'Timed out trying to connect to internal docker host.' >&2
 		exit 1
 	fi
-        tries=$(( tries + 1 ))
+        tries=$(( $tries + 1 ))
 	sleep 1
 done
 
