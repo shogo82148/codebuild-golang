@@ -5,7 +5,7 @@ runtimes:
     versions:
       1.12.8:
         commands:
-          - echo "Installing Go version %%GOLANG_VERSION%% ..."
+          - echo "Installing Go version 1.12.8 ..."
   docker:
     versions:
       18:

@@ -38,8 +38,8 @@ sub execute_template {
     my $doc = do { local $/ = undef; <$fh>; };
     close $fh;
 
-    $doc =~ s/%%GOLANG_VERSION%%/$latest/;
-    $doc =~ s/%%GOLANG_DOWNLOAD_SHA256%%/$sha256/;
+    $doc =~ s/%%GOLANG_VERSION%%/$latest/g;
+    $doc =~ s/%%GOLANG_DOWNLOAD_SHA256%%/$sha256/g;
 
     open $fh, '>', "$output" or die $!;
     print $fh $doc;
