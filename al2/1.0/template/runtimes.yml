@@ -1,0 +1,8 @@
+version: 0.1
+
+runtimes:
+  golang:
+    versions:
+      %%GOLANG_VERSION%%:
+        commands:
+          - echo "Installing Go version %%GOLANG_VERSION%% ..."

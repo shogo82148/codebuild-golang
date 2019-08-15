@@ -11,7 +11,7 @@
 
 FROM ubuntu:18.04
 
-ENV GOLANG_VERSION="%%GOLANG_VERSION%%" \
+ENV GOLANG_VERSION="1.12.8" \
  DOCKER_VERSION="18.09.1" \
  DOCKER_COMPOSE_VERSION="1.23.2"
 
@@ -71,14 +71,6 @@ RUN set -ex \
     && echo "$JQ_SHA256 /usr/local/bin/jq" | sha256sum -c - \
     && chmod +x /usr/local/bin/jq
 
-# Download and set up GitVersion
-RUN set -ex \
-    && wget "https://github.com/GitTools/GitVersion/releases/download/v${GITVERSION_VERSION}/GitVersion-bin-net40-v${GITVERSION_VERSION}.zip" -O /tmp/GitVersion_${GITVERSION_VERSION}.zip \
-    && mkdir -p /usr/local/GitVersion_${GITVERSION_VERSION} \
-    && unzip /tmp/GitVersion_${GITVERSION_VERSION}.zip -d /usr/local/GitVersion_${GITVERSION_VERSION} \
-    && rm /tmp/GitVersion_${GITVERSION_VERSION}.zip \
-    && echo "mono /usr/local/GitVersion_${GITVERSION_VERSION}/GitVersion.exe \$@" >> /usr/local/bin/gitversion \
-    && chmod +x /usr/local/bin/gitversion
 # Install Docker
 RUN set -ex \
     && curl -fSL "https://${DOCKER_BUCKET}/linux/static/${DOCKER_CHANNEL}/x86_64/docker-${DOCKER_VERSION}.tgz" -o docker.tgz \
@@ -114,7 +106,7 @@ COPY ssh_config /root/.ssh/config
 COPY dockerd-entrypoint.sh /usr/local/bin/
 
 #****************     GO     **********************************************************
-ENV GOLANG_DOWNLOAD_SHA256="%%GOLANG_DOWNLOAD_SHA256%%" \
+ENV GOLANG_DOWNLOAD_SHA256="bd26cd4962a362ed3c11835bca32c2e131c2ae050304f2c4df9fa6ded8db85d2" \
     GOPATH="/go"
 RUN set -ex \
     && mkdir -p "$GOPATH/src" "$GOPATH/bin" \

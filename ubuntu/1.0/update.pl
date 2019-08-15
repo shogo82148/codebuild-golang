@@ -6,6 +6,7 @@ use warnings;
 use JSON qw(decode_json encode_json);
 
 my $golang = shift or die "golang version is required";
+my $output = "go$golang";
 
 my @versions;
 my $pageToken = "";
@@ -29,21 +30,20 @@ do {
 } @versions;
 my $latest = pop @versions;
 my $sha256 = `curl -fsSL "https://storage.googleapis.com/golang/go${latest}.linux-amd64.tar.gz.sha256"`;
-mkdir $golang unless -d $golang;
+mkdir $output unless -d $output;
 
-open my $fh, '<', 'Dockerfile.template' or die $!;
+open my $fh, '<', 'template/Dockerfile' or die $!;
 my $doc = do { local $/ = undef; <$fh>; };
 close $fh;
 
 $doc =~ s/%%GOLANG_VERSION%%/$latest/;
 $doc =~ s/%%GOLANG_DOWNLOAD_SHA256%%/$sha256/;
 
-open $fh, '>', "$golang/Dockerfile" or die $!;
+open $fh, '>', "$output/Dockerfile" or die $!;
 print $fh $doc;
 close $fh;
 
-`cp ssh_config $golang`;
-`cp dockerd-entrypoint.sh $golang`;
-`cp docker-compose.test.yml $golang`;
+`cp template/ssh_config $output`;
+`cp template/dockerd-entrypoint.sh $output`;
 
 1;

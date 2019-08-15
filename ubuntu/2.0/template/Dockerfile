@@ -1,4 +1,4 @@
-# Copyright 2017-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+# Copyright 2017-2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 #
 # Licensed under the Amazon Software License (the "License"). You may not use this file except in compliance with the License.
 # A copy of the License is located at
@@ -11,14 +11,14 @@
 
 FROM ubuntu:18.04
 
-ENV GOLANG_VERSION="1.11.13" \
- DOCKER_VERSION="18.09.1" \
- DOCKER_COMPOSE_VERSION="1.23.2"
+ENV GOLANG_VERSION="%%GOLANG_VERSION%%" \
+ DOCKER_VERSION="18.09.6" \
+ DOCKER_COMPOSE_VERSION="1.24.0"
 
 #****************        Utilities     ********************************************* 
 ENV DOCKER_BUCKET="download.docker.com" \    
     DOCKER_CHANNEL="stable" \
-    DOCKER_SHA256="c9959e42b637fb7362899ac1d1aeef2a966fa0ea85631da91f4c4a7a9ec29644" \
+    DOCKER_SHA256="1f3f6774117765279fce64ee7f76abbb5f260264548cf80631d68fb2d795bb09" \
     DIND_COMMIT="3b5fac462d21ca164b3778647420016315289034" \    
     GITVERSION_VERSION="4.0.0" \
     JQ_VERSION="1.6" \
@@ -33,7 +33,7 @@ RUN set -ex \
     && apt install -y apt-transport-https \
     && apt-get update \
     && apt-get install software-properties-common -y --no-install-recommends \
-    && apt-add-repository ppa:git-core/ppa \
+    && apt-add-repository -y ppa:git-core/ppa \
     && apt-get update \
     && apt-get install git=1:2.* -y --no-install-recommends \
     && git version \
@@ -63,22 +63,14 @@ RUN set -ex \
        libio-pty-perl libserf-1-1 libsvn-perl libsvn1 libtcl8.6 libtimedate-perl \
        libxml2-utils libyaml-perl python-bzrlib python-configobj \
        sgml-base sgml-data subversion tcl tcl8.6 xml-core xmlto xsltproc \
-       tk gettext gettext-base libapr1 libaprutil1 xvfb expect \
-    && apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF \
+       tk gettext gettext-base libapr1 libaprutil1 xvfb expect parallel \
+       locales rsync \
     && rm -rf /var/lib/apt/lists/* \
     && apt-get clean \
     && wget https://github.com/stedolan/jq/releases/download/jq-${JQ_VERSION}/jq-linux64 -O /usr/local/bin/jq \
     && echo "$JQ_SHA256 /usr/local/bin/jq" | sha256sum -c - \
     && chmod +x /usr/local/bin/jq
 
-# Download and set up GitVersion
-RUN set -ex \
-    && wget "https://github.com/GitTools/GitVersion/releases/download/v${GITVERSION_VERSION}/GitVersion-bin-net40-v${GITVERSION_VERSION}.zip" -O /tmp/GitVersion_${GITVERSION_VERSION}.zip \
-    && mkdir -p /usr/local/GitVersion_${GITVERSION_VERSION} \
-    && unzip /tmp/GitVersion_${GITVERSION_VERSION}.zip -d /usr/local/GitVersion_${GITVERSION_VERSION} \
-    && rm /tmp/GitVersion_${GITVERSION_VERSION}.zip \
-    && echo "mono /usr/local/GitVersion_${GITVERSION_VERSION}/GitVersion.exe \$@" >> /usr/local/bin/gitversion \
-    && chmod +x /usr/local/bin/gitversion
 # Install Docker
 RUN set -ex \
     && curl -fSL "https://${DOCKER_BUCKET}/linux/static/${DOCKER_CHANNEL}/x86_64/docker-${DOCKER_VERSION}.tgz" -o docker.tgz \
@@ -99,33 +91,41 @@ RUN set -ex \
 
 # https://docs.aws.amazon.com/eks/latest/userguide/install-aws-iam-authenticator.html https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ECS_CLI_installation.html
 RUN curl -sS -o /usr/local/bin/aws-iam-authenticator https://amazon-eks.s3-us-west-2.amazonaws.com/1.11.5/2018-12-06/bin/linux/amd64/aws-iam-authenticator \
- && curl -sS -o /usr/local/bin/kubectl https://amazon-eks.s3-us-west-2.amazonaws.com/1.11.5/2018-12-06/bin/linux/amd64/kubectl \
- && curl -sS -o /usr/local/bin/ecs-cli https://s3.amazonaws.com/amazon-ecs-cli/ecs-cli-linux-amd64-latest \
- && chmod +x /usr/local/bin/kubectl /usr/local/bin/aws-iam-authenticator /usr/local/bin/ecs-cli
+    && curl -sS -o /usr/local/bin/kubectl https://amazon-eks.s3-us-west-2.amazonaws.com/1.11.5/2018-12-06/bin/linux/amd64/kubectl \
+    && curl -sS -o /usr/local/bin/ecs-cli https://s3.amazonaws.com/amazon-ecs-cli/ecs-cli-linux-amd64-latest \
+    && chmod +x /usr/local/bin/kubectl /usr/local/bin/aws-iam-authenticator /usr/local/bin/ecs-cli
 
 RUN set -ex \
-&& pip3 install awscli boto3  
+    && pip3 install --upgrade setuptools wheel \
+    && pip3 install awscli boto3  
 
 VOLUME /var/lib/docker
 
 # Configure SSH
 COPY ssh_config /root/.ssh/config
 
+COPY runtimes.yml /codebuild/image/config/runtimes.yml
+
 COPY dockerd-entrypoint.sh /usr/local/bin/
 
 #****************     GO     **********************************************************
-ENV GOLANG_DOWNLOAD_SHA256="50fe8e13592f8cf22304b9c4adfc11849a2c3d281b1d7e09c924ae24874c6daa" \
-    GOPATH="/go"
+ENV GOLANG_DOWNLOAD_SHA256="%%GOLANG_DOWNLOAD_SHA256%%" \
+    GOPATH="/go" \
+    DEP_VERSION="0.5.1" \
+    DEP_BINARY="dep-linux-amd64"
+
 RUN set -ex \
     && mkdir -p "$GOPATH/src" "$GOPATH/bin" \
     && chmod -R 777 "$GOPATH" \
     && apt-get update && apt-get install -y --no-install-recommends \
         pkg-config \
     && apt-get clean \
-    && wget "https://storage.googleapis.com/golang/go$GOLANG_VERSION.linux-amd64.tar.gz" -O /tmp/golang.tar.gz \
+    && wget "https://dl.google.com/go/go$GOLANG_VERSION.linux-amd64.tar.gz" -O /tmp/golang.tar.gz \
     && echo "$GOLANG_DOWNLOAD_SHA256 /tmp/golang.tar.gz" | sha256sum -c - \
     && tar -xzf /tmp/golang.tar.gz -C /usr/local \
-    && rm -fr /var/lib/apt/lists/* /tmp/* /var/tmp/*
+    && rm -fr /var/lib/apt/lists/* /tmp/* /var/tmp/* \
+    && wget "https://github.com/golang/dep/releases/download/v$DEP_VERSION/$DEP_BINARY" -O "$GOPATH/bin/dep" \
+    && chmod +x "$GOPATH/bin/dep"
 
 ENV PATH="$GOPATH/bin:/usr/local/go/bin:$PATH"
 #****************     END GO     **********************************************************

@@ -1,0 +1,8 @@
+version: 0.1
+
+runtimes:
+  golang:
+    versions:
+      1.11.13:
+        commands:
+          - echo "Installing Go version 1.11.13 ..."
