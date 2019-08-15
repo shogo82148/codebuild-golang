@@ -35,8 +35,6 @@ RUN set -ex \
     && ssh-keyscan -t rsa,dsa -H bitbucket.org >> ~/.ssh/known_hosts \
     && chmod 600 ~/.ssh/known_hosts \
     && yum install -y $EPEL_REPO $TRINITY_REPO \
-    && rpm --import "https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF" \
-    && curl https://download.mono-project.com/repo/centos7-stable.repo | tee /etc/yum.repos.d/mono-centos7-stable.repo \
     && amazon-linux-extras enable corretto8 \
     && yum groupinstall -y "Development tools" \
     && yum install -y wget fakeroot jq \
@@ -50,7 +48,7 @@ RUN set -ex \
        libsqlite3x-devel libwebp-devel \
        libxml2-devel libxslt-devel libyaml-devel \
        e2fsprogs iptables xfsprogs \
-       mono-devel groff \
+       groff \
        asciidoc cvs cvsps docbook-dtds docbook-style-xsl \
        perl-DBD-SQLite perl-DBI perl-HTTP-Date \
        perl-IO-Pty-Easy libserf subversion-perl tcl perl-TimeDate \
