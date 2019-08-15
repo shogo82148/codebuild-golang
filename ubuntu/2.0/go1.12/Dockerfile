@@ -65,22 +65,12 @@ RUN set -ex \
        sgml-base sgml-data subversion tcl tcl8.6 xml-core xmlto xsltproc \
        tk gettext gettext-base libapr1 libaprutil1 xvfb expect parallel \
        locales rsync \
-    && apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF \
-    && echo "deb https://download.mono-project.com/repo/ubuntu stable-bionic main" | tee /etc/apt/sources.list.d/mono-official-stable.list \    
     && rm -rf /var/lib/apt/lists/* \
     && apt-get clean \
     && wget https://github.com/stedolan/jq/releases/download/jq-${JQ_VERSION}/jq-linux64 -O /usr/local/bin/jq \
     && echo "$JQ_SHA256 /usr/local/bin/jq" | sha256sum -c - \
     && chmod +x /usr/local/bin/jq
 
-# Download and set up GitVersion
-RUN set -ex \
-    && wget "https://github.com/GitTools/GitVersion/releases/download/v${GITVERSION_VERSION}/GitVersion-bin-net40-v${GITVERSION_VERSION}.zip" -O /tmp/GitVersion_${GITVERSION_VERSION}.zip \
-    && mkdir -p /usr/local/GitVersion_${GITVERSION_VERSION} \
-    && unzip /tmp/GitVersion_${GITVERSION_VERSION}.zip -d /usr/local/GitVersion_${GITVERSION_VERSION} \
-    && rm /tmp/GitVersion_${GITVERSION_VERSION}.zip \
-    && echo "mono /usr/local/GitVersion_${GITVERSION_VERSION}/GitVersion.exe \$@" >> /usr/local/bin/gitversion \
-    && chmod +x /usr/local/bin/gitversion
 # Install Docker
 RUN set -ex \
     && curl -fSL "https://${DOCKER_BUCKET}/linux/static/${DOCKER_CHANNEL}/x86_64/docker-${DOCKER_VERSION}.tgz" -o docker.tgz \
