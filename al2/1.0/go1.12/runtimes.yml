@@ -3,6 +3,6 @@ version: 0.1
 runtimes:
   golang:
     versions:
-      1.12.8:
+      1.12.9:
         commands:
-          - echo "Installing Go version 1.12.8 ..."
+          - echo "Installing Go version 1.12.9 ..."
