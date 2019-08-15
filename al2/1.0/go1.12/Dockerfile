@@ -11,8 +11,10 @@
 
 FROM amazonlinux:2
 
-ENV GOLANG_VERSION="1.12.8" \
+ENV GOLANG_VERSION="1.12.9" \
  PYTHON_VERSION="3.7.3" \
+ JQ_VERSION="1.6" \
+ JQ_SHA256="af986793a515d500ab2d35f8d2aecd656e764504b789b66d7e1a0b727a124c44" \
  DOCKER_VERSION="18.09.6" \
  DOCKER_COMPOSE_VERSION="1.24.0"
 
@@ -38,7 +40,7 @@ RUN set -ex \
     && yum install -y $EPEL_REPO $TRINITY_REPO \
     && amazon-linux-extras enable corretto8 \
     && yum groupinstall -y "Development tools" \
-    && yum install -y wget fakeroot jq \
+    && yum install -y wget fakeroot \
        dirmngr bzr mercurial procps-ng \
        ImageMagick \
        openssl-devel libdb-devel \
@@ -55,7 +57,10 @@ RUN set -ex \
        perl-IO-Pty-Easy libserf subversion-perl tcl perl-TimeDate \
        perl-YAML-LibYAML bzrtools python-configobj \
        sgml-common xmlto libxslt \
-       tk xorg-x11-server-Xvfb expect parallel rsync
+       tk xorg-x11-server-Xvfb expect parallel rsync \
+    && wget https://github.com/stedolan/jq/releases/download/jq-${JQ_VERSION}/jq-linux64 -O /usr/local/bin/jq \
+    && echo "$JQ_SHA256 /usr/local/bin/jq" | sha256sum -c - \
+    && chmod +x /usr/local/bin/jq
 
 # Install Docker
 RUN set -ex \
@@ -158,7 +163,7 @@ RUN set -ex \
     && pip3 install awscli boto3
 
 #****************     GO     **********************************************************
-ENV GOLANG_DOWNLOAD_SHA256="bd26cd4962a362ed3c11835bca32c2e131c2ae050304f2c4df9fa6ded8db85d2" \
+ENV GOLANG_DOWNLOAD_SHA256="ac2a6efcc1f5ec8bdc0db0a988bb1d301d64b6d61b7e8d9e42f662fbb75a2b9b" \
     GOPATH="/go" \
     DEP_VERSION="0.5.1" \
     DEP_BINARY="dep-linux-amd64"
