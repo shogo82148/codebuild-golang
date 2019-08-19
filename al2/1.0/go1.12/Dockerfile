@@ -25,9 +25,7 @@ ENV DOCKER_BUCKET="download.docker.com" \
     DIND_COMMIT="3b5fac462d21ca164b3778647420016315289034" \    
     GITVERSION_VERSION="4.0.0" \
     DEBIAN_FRONTEND="noninteractive" \
-    SRC_DIR="/usr/src" \
-    EPEL_REPO="https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm" \
-    TRINITY_REPO="https://mirror.ppa.trinitydesktop.org/trinity/trinity/rpm/el7/trinity-r14/RPMS/noarch/trinity-repo-14.0.5-1.el7.noarch.rpm"
+    SRC_DIR="/usr/src"
 
 # Install git, SSH, and other utilities
 RUN set -ex \
@@ -37,8 +35,6 @@ RUN set -ex \
     && ssh-keyscan -t rsa,dsa -H github.com >> ~/.ssh/known_hosts \
     && ssh-keyscan -t rsa,dsa -H bitbucket.org >> ~/.ssh/known_hosts \
     && chmod 600 ~/.ssh/known_hosts \
-    && yum install -y $EPEL_REPO $TRINITY_REPO \
-    && amazon-linux-extras enable corretto8 \
     && yum groupinstall -y "Development tools" \
     && yum install -y wget fakeroot \
        dirmngr bzr mercurial procps-ng \
