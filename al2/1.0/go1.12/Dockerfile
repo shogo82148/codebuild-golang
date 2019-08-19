@@ -53,7 +53,7 @@ RUN set -ex \
        perl-IO-Pty-Easy libserf subversion-perl tcl perl-TimeDate \
        perl-YAML-LibYAML bzrtools python-configobj \
        sgml-common xmlto libxslt \
-       tk xorg-x11-server-Xvfb expect parallel rsync \
+       tk expect parallel rsync \
     && rm -rf /var/cache/yum/* \
     && yum clean all \
     && wget https://github.com/stedolan/jq/releases/download/jq-${JQ_VERSION}/jq-linux64 -O /usr/local/bin/jq \
