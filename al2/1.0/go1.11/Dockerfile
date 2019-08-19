@@ -54,6 +54,8 @@ RUN set -ex \
        perl-YAML-LibYAML bzrtools python-configobj \
        sgml-common xmlto libxslt \
        tk xorg-x11-server-Xvfb expect parallel rsync \
+    && rm -rf /var/cache/yum/* \
+    && yum clean all \
     && wget https://github.com/stedolan/jq/releases/download/jq-${JQ_VERSION}/jq-linux64 -O /usr/local/bin/jq \
     && echo "$JQ_SHA256 /usr/local/bin/jq" | sha256sum -c - \
     && chmod +x /usr/local/bin/jq
@@ -148,7 +150,8 @@ RUN yum install -y tcl-devel tk-devel bzip2-devel gdbm-devel libuuid-devel \
     && ln -s pydoc3 pydoc \
     && ln -s python3 python \
     && ln -s python3-config python-config \
-        && rm -fr /tmp/* /var/tmp/*
+    && rm -fr /tmp/* /var/tmp/* \
+    && yum clean all
 #****************      END PYTHON     *********************************************
 
 ENV PATH="/root/.local/bin:$PATH"
@@ -188,10 +191,8 @@ RUN set -ex \
     && rm /tmp/GitVersion_${GITVERSION_VERSION}.zip \
     && ln -s /usr/lib64/libgit2.so.0.26.6 /usr/lib64/libgit2-15e1193.so \
     && echo "dotnet /usr/local/GitVersion_${GITVERSION_VERSION}/GitVersion.dll \$@" >> /usr/local/bin/gitversion \
-    && chmod +x /usr/local/bin/gitversion
-
-# Cleanup
-RUN set -ex \
+    && chmod +x /usr/local/bin/gitversion \
+    && rm -rf /var/cache/yum/* \
     && yum clean all
 
 ENTRYPOINT ["dockerd-entrypoint.sh"]
