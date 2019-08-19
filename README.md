@@ -4,17 +4,30 @@ Golang Docker Image for CodeBuild
 ## Purpose
 
 It is a CodeBuild custom image including Golang runtime, based on [AWS CodeBuild curated Docker images](https://github.com/aws/aws-codebuild-docker-images).
+This image is optimized to Golang project.
 
 ## Usage
 
-Prebuild images are available on Dockerhub.
+Pre-build images are available on DockerHub.
 
 - [shogo82148/codebuild-golang](https://hub.docker.com/r/shogo82148/codebuild-golang)
 
 Docker Pull Command:
 
-```
-docker pull shogo82148/codebuild-golang
+```bash
+# standard 1.0 based
+docker pull shogo82148/codebuild-golang:1.12
+docker pull shogo82148/codebuild-golang:1.11
+docker pull shogo82148/codebuild-golang:1.12-standard-1.0
+docker pull shogo82148/codebuild-golang:1.11-standard-1.0
+
+# standard 2.0 based
+docker pull shogo82148/codebuild-golang:1.12-standard-2.0
+docker pull shogo82148/codebuild-golang:1.11-standard-2.0
+
+# amazonlinux2-x86_64-standard 1.0 based
+docker pull shogo82148/codebuild-golang:1.12-amazonlinux-1.0
+docker pull shogo82148/codebuild-golang:1.11-amazonlinux-1.0
 ```
 
 ### An Example of CloudFormation Template for Creating CodeBuild Project
