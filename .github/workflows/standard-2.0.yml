@@ -50,3 +50,4 @@ jobs:
         TAG: "${{ secrets.username }}/codebuild-golang:${{ matrix.golang }}-standard-2.0"
         PACKAGE: "docker.pkg.github.com/${{ github.repository }}/go${{ matrix.golang }}-standard-2.0:latest"
       if: github.ref == 'refs/heads/master' 
+      continue-on-error: true # docker.pkg.github.com is in beta and unstable, so ignore error (2019-08-31)
