@@ -41,8 +41,8 @@ jobs:
     - name: Publish to the GitHub package registry
       run: |
         printenv PASSWORD | docker login docker.pkg.github.com -u "$USERNAME" --password-stdin
-        docker tag "$TAG" "$PACKAGE:2019-08-31"
-        docker push "$PACKAGE:2019-08-31"
+        docker tag "$TAG" "$PACKAGE:$(date --date "$DATE" -u +"%Y-%m-%d")"
+        docker push "$PACKAGE:$(date --date "$DATE" -u +"%Y-%m-%d")"
       env:
         USERNAME: ${{ github.actor }}
         PASSWORD: ${{ secrets.token }}
