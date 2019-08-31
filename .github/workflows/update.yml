@@ -2,8 +2,8 @@ name: Update
 
 on:
 - push
-- schedule:
-  - cron: "9 16 * * *"
+#   schedule:
+#   - cron: "9 16 * * *"
 
 jobs:
 
