@@ -1,25 +1,8 @@
-Skip to content
- 
-Search or jump to…
-
-Pull requests
-Issues
-Marketplace
-Explore
- 
-@shogo82148 
-2
-0 0 shogo82148/codebuild-php-node
- Code  Issues 0  Pull requests 0  Actions  Projects 0  Wiki  Security  Insights  Settings
-codebuild-php-node/.github/workflows/update.yml
-@shogo82148 shogo82148 Update update.yml
-87d061e yesterday
-35 lines (29 sloc)  1.06 KB
-    
 name: Update
 
 on:
-  schedule:
+- push
+- schedule:
   - cron: "9 16 * * *"
 
 jobs:
