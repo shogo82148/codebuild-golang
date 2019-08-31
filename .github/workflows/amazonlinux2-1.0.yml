@@ -1,0 +1,52 @@
+name: amazonlinux2-1.0
+
+on:
+  push:
+    paths:
+    - al2/1.0/*/*
+    - .github/workflows/amazonlinux2-1.0.yml
+  pull_request:
+    paths:
+    - al2/1.0/*/*
+    - .github/workflows/amazonlinux2-1.0.yml
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        golang:
+        - "1.11"
+        - "1.12"
+    steps:
+    - uses: actions/checkout@v1
+
+    - name: Build the Docker image
+      run: |
+        docker build . --tag "$TAG"
+      working-directory: "al2/1.0/go${{ matrix.golang }}"
+      env:
+        TAG: "${{ secrets.username }}/codebuild-golang:${{ matrix.golang }}-amazonlinux2-1.0"
+
+    - name: Publish to the Docker Hub
+      run: |
+        printenv PASSWORD | docker login -u "$USERNAME" --password-stdin
+        docker push "$TAG"
+      env:
+        USERNAME: ${{ secrets.username }}
+        PASSWORD: ${{ secrets.password }}
+        TAG: "${{ secrets.username }}/codebuild-golang:${{ matrix.golang }}-amazonlinux2-1.0"
+      if: github.ref == 'refs/heads/master'
+
+    - name: Publish to the GitHub package registry
+      run: |
+        echo "$USERNAME"
+        printenv PASSWORD | docker login docker.pkg.github.com -u "$USERNAME" --password-stdin
+        docker tag "$TAG" "$PACKAGE"
+        docker push "$PACKAGE"
+      env:
+        USERNAME: ${{ github.actor }}
+        PASSWORD: ${{ secrets.token }}
+        TAG: "${{ secrets.username }}/codebuild-golang:${{ matrix.golang }}-amazonlinux2-1.0"
+        PACKAGE: "docker.pkg.github.com/${{ github.repository }}/go${{ matrix.golang }}-amazonlinux2-1.0:latest"
+      if: github.ref == 'refs/heads/master' 
