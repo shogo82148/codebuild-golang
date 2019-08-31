@@ -1,0 +1,51 @@
+Skip to content
+ 
+Search or jump to…
+
+Pull requests
+Issues
+Marketplace
+Explore
+ 
+@shogo82148 
+2
+0 0 shogo82148/codebuild-php-node
+ Code  Issues 0  Pull requests 0  Actions  Projects 0  Wiki  Security  Insights  Settings
+codebuild-php-node/.github/workflows/update.yml
+@shogo82148 shogo82148 Update update.yml
+87d061e yesterday
+35 lines (29 sloc)  1.06 KB
+    
+name: Update
+
+on:
+  schedule:
+  - cron: "9 16 * * *"
+
+jobs:
+
+  build:
+ 
+    runs-on: ubuntu-latest
+ 
+    steps:
+    - uses: actions/checkout@v1
+    - name: Checking Update
+      uses: "docker://perl:5.30"
+      with:
+        args: bash -c "cpanm JSON && ./update.sh"
+    - name: Commit
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        branch=update-$(date +"%Y-%m-%d-%H-%M-%S")
+        git config --global user.name "Ichinose Shogo"
+        git config --global user.email shogo82148@gmail.com
+        git switch -c $branch
+        git add .
+        git commit -m "Update $(date +"%Y-%m-%d %H:%M:%S")" || exit 0
+        header=$(echo -n "${GITHUB_ACTOR}:${GITHUB_TOKEN}" | base64)
+        git -c http.extraheader="AUTHORIZATION: basic $header" push -u origin $branch
+        curl -H "Authorization: token $GITHUB_TOKEN" \
+          -d "$(jq --arg branch $branch -n '{ "title": "Amazing new feature", "base": "master", "head": $branch }')" \
+          "https://api.github.com/repos/$GITHUB_REPOSITORY/pulls"
