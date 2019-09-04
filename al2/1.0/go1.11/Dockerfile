@@ -37,7 +37,7 @@ RUN set -ex \
     && chmod 600 ~/.ssh/known_hosts \
     && yum groupinstall -y "Development tools" \
     && yum install -y wget fakeroot \
-       dirmngr bzr mercurial procps-ng \
+       bzr mercurial procps-ng \
        ImageMagick \
        openssl-devel libdb-devel \
        libevent-devel libffi-devel GeoIP-devel glib2-devel \
