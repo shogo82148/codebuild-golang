@@ -12,7 +12,7 @@
 FROM amazonlinux:2
 
 ENV GOLANG_VERSION="1.13.1" \
- PYTHON_VERSION="3.7.3" \
+ PYTHON_VERSION="3.7.4" \
  JQ_VERSION="1.6" \
  JQ_SHA256="af986793a515d500ab2d35f8d2aecd656e764504b789b66d7e1a0b727a124c44" \
  DOCKER_VERSION="18.09.6" \
@@ -96,7 +96,7 @@ COPY dockerd-entrypoint.sh /usr/local/bin/
 #****************        PYTHON     *********************************************
 ENV PATH="/usr/local/bin:$PATH" \
     GPG_KEY="0D96DF4D4110E5C43FBFB17F2D347EA6AA65421D" \
-    PYTHON_PIP_VERSION="19.1.1" \
+    PYTHON_PIP_VERSION="19.2.3" \
     LC_ALL=C.UTF-8 \
     LANG=C.UTF-8
 
