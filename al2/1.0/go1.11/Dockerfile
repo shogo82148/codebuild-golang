@@ -12,7 +12,7 @@
 FROM amazonlinux:2
 
 ENV GOLANG_VERSION="1.11.13" \
- PYTHON_VERSION="3.7.3" \
+ PYTHON_VERSION="3.7.4" \
  JQ_VERSION="1.6" \
  JQ_SHA256="af986793a515d500ab2d35f8d2aecd656e764504b789b66d7e1a0b727a124c44" \
  DOCKER_VERSION="18.09.6" \
@@ -96,7 +96,7 @@ COPY dockerd-entrypoint.sh /usr/local/bin/
 #****************        PYTHON     *********************************************
 ENV PATH="/usr/local/bin:$PATH" \
     GPG_KEY="0D96DF4D4110E5C43FBFB17F2D347EA6AA65421D" \
-    PYTHON_PIP_VERSION="19.1.1" \
+    PYTHON_PIP_VERSION="19.2.3" \
     LC_ALL=C.UTF-8 \
     LANG=C.UTF-8
 
@@ -179,20 +179,5 @@ RUN set -ex \
 
 ENV PATH="$GOPATH/bin:/usr/local/go/bin:$PATH"
 #****************     END GO     **********************************************************
-
-# Download and set up GitVersion
-ENV LIBGIT2_PKG="https://rpmfind.net/linux/centos/7.6.1810/extras/x86_64/Packages/libgit2-0.26.6-1.el7.x86_64.rpm"
-
-RUN set -ex \
-    && yum install -y $LIBGIT2_PKG \
-    && wget "https://github.com/GitTools/GitVersion/releases/download/v${GITVERSION_VERSION}/GitVersion-bin-coreclr-v${GITVERSION_VERSION}.zip" -O /tmp/GitVersion_${GITVERSION_VERSION}.zip \
-    && mkdir -p /usr/local/GitVersion_${GITVERSION_VERSION} \
-    && unzip /tmp/GitVersion_${GITVERSION_VERSION}.zip -d /usr/local/GitVersion_${GITVERSION_VERSION} \
-    && rm /tmp/GitVersion_${GITVERSION_VERSION}.zip \
-    && ln -s /usr/lib64/libgit2.so.0.26.6 /usr/lib64/libgit2-15e1193.so \
-    && echo "dotnet /usr/local/GitVersion_${GITVERSION_VERSION}/GitVersion.dll \$@" >> /usr/local/bin/gitversion \
-    && chmod +x /usr/local/bin/gitversion \
-    && rm -rf /var/cache/yum/* \
-    && yum clean all
 
 ENTRYPOINT ["dockerd-entrypoint.sh"]
