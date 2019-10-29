@@ -12,6 +12,8 @@ jobs:
  
     steps:
     - uses: actions/checkout@v1
+      with:
+        ref: master
     - name: Checking Update
       uses: "docker://perl:5.30"
       with:
@@ -29,5 +31,5 @@ jobs:
         header=$(echo -n "${GITHUB_ACTOR}:${GITHUB_TOKEN}" | base64)
         git -c http.extraheader="AUTHORIZATION: basic $header" push -u origin $branch
         curl -H "Authorization: token $GITHUB_TOKEN" \
-          -d "$(jq --arg branch $branch -n '{ "title": "Amazing new feature", "base": "master", "head": $branch }')" \
+          -d "$(jq --arg branch $branch -n '{ "title": "Auto Update", "base": "master", "head": $branch }')" \
           "https://api.github.com/repos/$GITHUB_REPOSITORY/pulls"
