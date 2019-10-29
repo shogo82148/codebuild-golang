@@ -32,7 +32,8 @@ jobs:
     - name: Publish to the Docker Hub
       run: |
         printenv PASSWORD | docker login -u "$USERNAME" --password-stdin
-        docker push "$TAG"
+        docker push "$TAG" || sleep "$(( $RANDOM % 60))" || docker push "$TAG" || sleep "$(( $RANDOM % 120))" || docker push "$TAG"
+        docker logout
       env:
         USERNAME: ${{ secrets.username }}
         PASSWORD: ${{ secrets.password }}
@@ -41,14 +42,13 @@ jobs:
   
     - name: Publish to the GitHub package registry
       run: |
-        echo "$USERNAME"
-        printenv PASSWORD | docker login docker.pkg.github.com -u "$USERNAME" --password-stdin
         docker tag "$TAG" "$PACKAGE"
-        docker push "$PACKAGE"
+        printenv PASSWORD | docker login docker.pkg.github.com -u "$USERNAME" --password-stdin
+        docker push "$PACKAGE" || sleep "$(( $RANDOM % 60))" || docker push "$PACKAGE" || sleep "$(( $RANDOM % 120))" || docker push "$PACKAGE"
+        docker logout docker.pkg.github.com
       env:
         USERNAME: ${{ github.actor }}
-        PASSWORD: ${{ secrets.token }}
+        PASSWORD: ${{ secrets.GITHUB_TOKEN }}
         TAG: "${{ secrets.username }}/codebuild-golang:${{ matrix.golang }}-standard-1.0"
         PACKAGE: "docker.pkg.github.com/${{ github.repository }}/go${{ matrix.golang }}-standard-1.0:latest"
-      if: github.ref == 'refs/heads/master' 
-      continue-on-error: true # docker.pkg.github.com is in beta and unstable, so ignore error (2019-08-31)
+      if: github.ref == 'refs/heads/master'
