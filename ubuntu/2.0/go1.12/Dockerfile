@@ -11,7 +11,7 @@
 
 FROM ubuntu:18.04
 
-ENV GOLANG_VERSION="1.12.12" \
+ENV GOLANG_VERSION="1.12.13" \
  DOCKER_VERSION="18.09.6" \
  DOCKER_COMPOSE_VERSION="1.24.0"
 
@@ -109,7 +109,7 @@ COPY runtimes.yml /codebuild/image/config/runtimes.yml
 COPY dockerd-entrypoint.sh /usr/local/bin/
 
 #****************     GO     **********************************************************
-ENV GOLANG_DOWNLOAD_SHA256="4cf11ac6a8fa42d26ab85e27a5d916ee171900a87745d9f7d4a29a21587d78fc" \
+ENV GOLANG_DOWNLOAD_SHA256="da036454cb3353f9f507f0ceed4048feac611065e4e1818b434365eb32ac9bdc" \
     GOPATH="/go" \
     DEP_VERSION="0.5.1" \
     DEP_BINARY="dep-linux-amd64"
