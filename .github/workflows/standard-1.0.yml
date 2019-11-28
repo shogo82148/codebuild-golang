@@ -5,6 +5,8 @@ on:
     paths:
       - ubuntu/1.0/*/*
       - .github/workflows/standard-1.0.yml
+    branches:
+      - master
   pull_request:
     paths:
       - ubuntu/1.0/*/*

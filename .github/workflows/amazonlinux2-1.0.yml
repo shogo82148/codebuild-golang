@@ -5,6 +5,8 @@ on:
     paths:
       - al2/1.0/*/*
       - .github/workflows/amazonlinux2-1.0.yml
+    branches:
+      - master
   pull_request:
     paths:
       - al2/1.0/*/*
