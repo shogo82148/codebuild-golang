@@ -23,13 +23,12 @@ jobs:
         - "1.13"
     steps:
       - uses: actions/checkout@v1
+      - run: echo "::set-env name=TAG::${{ secrets.username }}/codebuild-golang:${{ matrix.golang }}-standard-1.0"
 
       - name: Build the Docker image
         run: |
           docker build . --tag "$TAG"
         working-directory: "ubuntu/1.0/go${{ matrix.golang }}"
-        env:
-          TAG: "${{ secrets.username }}/codebuild-golang:${{ matrix.golang }}-standard-1.0"
     
       - name: Publish to the Docker Hub
         run: |
@@ -39,7 +38,6 @@ jobs:
         env:
           USERNAME: ${{ secrets.username }}
           PASSWORD: ${{ secrets.password }}
-          TAG: "${{ secrets.username }}/codebuild-golang:${{ matrix.golang }}-standard-1.0"
         if: github.ref == 'refs/heads/master'
     
       - name: Publish to the GitHub package registry
@@ -51,6 +49,5 @@ jobs:
         env:
           USERNAME: ${{ github.actor }}
           PASSWORD: ${{ secrets.GITHUB_TOKEN }}
-          TAG: "${{ secrets.username }}/codebuild-golang:${{ matrix.golang }}-standard-1.0"
           PACKAGE: "docker.pkg.github.com/${{ github.repository }}/go${{ matrix.golang }}-standard-1.0:latest"
         if: github.ref == 'refs/heads/master'
