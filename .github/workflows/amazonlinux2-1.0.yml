@@ -3,12 +3,14 @@ name: amazonlinux2-1.0
 on:
   push:
     paths:
-    - al2/1.0/*/*
-    - .github/workflows/amazonlinux2-1.0.yml
+      - al2/1.0/*/*
+      - .github/workflows/amazonlinux2-1.0.yml
+    branches:
+      - master
   pull_request:
     paths:
-    - al2/1.0/*/*
-    - .github/workflows/amazonlinux2-1.0.yml
+      - al2/1.0/*/*
+      - .github/workflows/amazonlinux2-1.0.yml
 
 jobs:
   build:
@@ -16,39 +18,36 @@ jobs:
     strategy:
       matrix:
         golang:
-        - "1.11"
-        - "1.12"
-        - "1.13"
+          - "1.11"
+          - "1.12"
+          - "1.13"
     steps:
-    - uses: actions/checkout@v1
+      - uses: actions/checkout@v1
+      - run: echo "::set-env name=TAG::${{ secrets.username }}/codebuild-golang:${{ matrix.golang }}-amazonlinux2-1.0"
 
-    - name: Build the Docker image
-      run: |
-        docker build . --tag "$TAG"
-      working-directory: "al2/1.0/go${{ matrix.golang }}"
-      env:
-        TAG: "${{ secrets.username }}/codebuild-golang:${{ matrix.golang }}-amazonlinux2-1.0"
+      - name: Build the Docker image
+        run: |
+          docker build . --tag "$TAG"
+        working-directory: "al2/1.0/go${{ matrix.golang }}"
 
-    - name: Publish to the Docker Hub
-      run: |
-        printenv PASSWORD | docker login -u "$USERNAME" --password-stdin
-        docker push "$TAG" || sleep "$(( $RANDOM % 60))" || docker push "$TAG" || sleep "$(( $RANDOM % 120))" || docker push "$TAG"
-        docker logout
-      env:
-        USERNAME: ${{ secrets.username }}
-        PASSWORD: ${{ secrets.password }}
-        TAG: "${{ secrets.username }}/codebuild-golang:${{ matrix.golang }}-amazonlinux2-1.0"
-      if: github.ref == 'refs/heads/master'
+      - name: Publish to the Docker Hub
+        run: |
+          printenv PASSWORD | docker login -u "$USERNAME" --password-stdin
+          docker push "$TAG" || sleep "$(( $RANDOM % 60))" || docker push "$TAG" || sleep "$(( $RANDOM % 120))" || docker push "$TAG"
+          docker logout
+        env:
+          USERNAME: ${{ secrets.username }}
+          PASSWORD: ${{ secrets.password }}
+        if: github.ref == 'refs/heads/master'
 
-    - name: Publish to the GitHub package registry
-      run: |
-        docker tag "$TAG" "$PACKAGE"
-        printenv PASSWORD | docker login docker.pkg.github.com -u "$USERNAME" --password-stdin
-        docker push "$PACKAGE" || sleep "$(( $RANDOM % 60))" || docker push "$PACKAGE" || sleep "$(( $RANDOM % 120))" || docker push "$PACKAGE"
-        docker logout docker.pkg.github.com
-      env:
-        USERNAME: ${{ github.actor }}
-        PASSWORD: ${{ secrets.GITHUB_TOKEN }}
-        TAG: "${{ secrets.username }}/codebuild-golang:${{ matrix.golang }}-amazonlinux2-1.0"
-        PACKAGE: "docker.pkg.github.com/${{ github.repository }}/go${{ matrix.golang }}-amazonlinux2-1.0:latest"
-      if: github.ref == 'refs/heads/master'
+      - name: Publish to the GitHub package registry
+        run: |
+          docker tag "$TAG" "$PACKAGE"
+          printenv PASSWORD | docker login docker.pkg.github.com -u "$USERNAME" --password-stdin
+          docker push "$PACKAGE" || sleep "$(( $RANDOM % 60))" || docker push "$PACKAGE" || sleep "$(( $RANDOM % 120))" || docker push "$PACKAGE"
+          docker logout docker.pkg.github.com
+        env:
+          USERNAME: ${{ github.actor }}
+          PASSWORD: ${{ secrets.GITHUB_TOKEN }}
+          PACKAGE: "docker.pkg.github.com/${{ github.repository }}/go${{ matrix.golang }}-amazonlinux2-1.0:latest"
+        if: github.ref == 'refs/heads/master'
