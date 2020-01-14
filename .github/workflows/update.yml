@@ -1,6 +1,12 @@
 name: Update
 
 on:
+  push:
+    paths:
+      - .github/workflows/update.yml
+  pull_request:
+    paths:
+      - .github/workflows/update.yml
   schedule:
     - cron: "9 16 * * *"
 
@@ -11,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
  
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
         with:
           ref: master
       - name: Checking Update
@@ -20,16 +26,15 @@ jobs:
           args: bash -c "cpanm JSON && ./update.sh"
       - name: Commit
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ github.token }}
         run: |
           branch=update-$(date +"%Y-%m-%d-%H-%M-%S")
           git config --global user.name "Ichinose Shogo"
           git config --global user.email shogo82148@gmail.com
-          git switch -c $branch
+          git switch -c "$branch"
           git add .
           git commit -m "Update $(date +"%Y-%m-%d %H:%M:%S")" || exit 0
-          header=$(echo -n "${GITHUB_ACTOR}:${GITHUB_TOKEN}" | base64)
-          git -c http.extraheader="AUTHORIZATION: basic $header" push -u origin $branch
+          git push -u origin $branch
           curl -H "Authorization: token $GITHUB_TOKEN" \
             -d "$(jq --arg branch $branch -n '{ "title": "Auto Update", "base": "master", "head": $branch }')" \
             "https://api.github.com/repos/$GITHUB_REPOSITORY/pulls"

@@ -21,7 +21,7 @@ jobs:
         - "1.12"
         - "1.13"
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
       - run: echo "::set-env name=TAG::${{ secrets.username }}/codebuild-golang:${{ matrix.golang }}-standard-1.0"
 
       - name: Build the Docker image
