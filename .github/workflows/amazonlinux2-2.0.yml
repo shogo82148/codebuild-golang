@@ -20,6 +20,7 @@ jobs:
         golang:
           - "1.12"
           - "1.13"
+          - "1.14"
     steps:
       - uses: actions/checkout@v2
       - run: echo "::set-env name=TAG::${{ secrets.username }}/codebuild-golang:${{ matrix.golang }}-amazonlinux2-2.0"
