@@ -95,7 +95,7 @@ ENV PYTHON_38_VERSION="3.8.1" \
 
 COPY tools/runtime_configs/python/$PYTHON_38_VERSION /root/.pyenv/plugins/python-build/share/python-build/$PYTHON_38_VERSION
 RUN set -ex \
-    pyenv install $PYTHON_38_VERSION && rm -rf /tmp/* \
+    && pyenv install $PYTHON_38_VERSION && rm -rf /tmp/* \
     && pyenv global  $PYTHON_38_VERSION \
     && pip3 install --no-cache-dir --upgrade --force-reinstall "pip==$PYTHON_PIP_VERSION" \
     && pip3 install --no-cache-dir --upgrade "PyYAML==5.1.2" \
