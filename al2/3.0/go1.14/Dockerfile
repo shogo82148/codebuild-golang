@@ -55,8 +55,8 @@ RUN set -ex \
    && rm -rf $GIT_TAR_FILE /tmp/*
 
 # Install GitVersion
-ENV GITVERSION_VERSION="5.1.2"
-ENV LIBGIT2_PKG="https://rpmfind.net/linux/centos/7/extras/x86_64/Packages/libgit2-0.26.6-1.el7.x86_64.rpm"
+ENV GITVERSION_VERSION="5.1.2" \
+    LIBGIT2_PKG="https://rpmfind.net/linux/centos/7/extras/x86_64/Packages/libgit2-0.26.6-1.el7.x86_64.rpm"
 RUN set -ex \
     && yum install -y $LIBGIT2_PKG \
     && wget -nv https://github.com/GitTools/GitVersion/archive/${GITVERSION_VERSION}.zip -O /tmp/GitVersion_${GITVERSION_VERSION}.zip \
@@ -68,17 +68,14 @@ RUN set -ex \
     && chmod +x /usr/local/bin/gitversion \
     && rm -rf  /tmp/* \
     && rm -rf /var/cache/yum/* \
-    && yum clean all
-
+    && yum clean all \
 # AWS Tools
 # https://docs.aws.amazon.com/eks/latest/userguide/install-aws-iam-authenticator.html https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ECS_CLI_installation.html
 RUN curl -sS -o /usr/local/bin/aws-iam-authenticator https://amazon-eks.s3-us-west-2.amazonaws.com/1.14.6/2019-08-22/bin/linux/amd64/aws-iam-authenticator \
     && curl -sS -o /usr/local/bin/kubectl https://amazon-eks.s3-us-west-2.amazonaws.com/1.14.6/2019-08-22/bin/linux/amd64/kubectl \
     && curl -sS -o /usr/local/bin/ecs-cli https://s3.amazonaws.com/amazon-ecs-cli/ecs-cli-linux-amd64-latest \
-    && chmod +x /usr/local/bin/kubectl /usr/local/bin/aws-iam-authenticator /usr/local/bin/ecs-cli
-
+    && chmod +x /usr/local/bin/kubectl /usr/local/bin/aws-iam-authenticator /usr/local/bin/ecs-cli \
 # Configure SSM
-RUN set -ex \
     && yum install -y https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm \
     && rm -rf /var/cache/yum/* \
     && yum clean all
@@ -91,35 +88,29 @@ ENV PATH="/root/.pyenv/shims:/root/.pyenv/bin:$PATH"
 
 ##go
 RUN git clone https://github.com/syndbg/goenv.git $HOME/.goenv
-ENV PATH="/root/.goenv/shims:/root/.goenv/bin:/go/bin:$PATH"
-ENV GOENV_DISABLE_GOPATH=1
-ENV GOPATH="/go"
+ENV PATH="/root/.goenv/shims:/root/.goenv/bin:/go/bin:$PATH" \
+    GOENV_DISABLE_GOPATH=1 \
+    GOPATH="/go"
 
 #=======================End of layer: tools  =================
 
-FROM tools AS runtimes_1
+FROM tools AS runtimes
 
 #****************     GOLANG     ****************************************************
-ENV GOENV_DISABLE_GOPATH=1
-ENV GOPATH="/go"
 
 RUN goenv install 1.14.0; rm -rf /tmp/*; \
-    goenv global  1.14.0
+    goenv global  1.14.0 \
+    go get -u github.com/golang/dep/cmd/dep
 
-RUN go get -u github.com/golang/dep/cmd/dep
 #****************      END GOLANG     ****************************************************
-
-#=======================End of layer: runtimes_1  =================
-FROM runtimes_1 AS runtimes_2
 
 #Docker 19
 ENV DOCKER_BUCKET="download.docker.com" \
     DOCKER_CHANNEL="stable" \
     DIND_COMMIT="3b5fac462d21ca164b3778647420016315289034" \
-    DOCKER_COMPOSE_VERSION="1.24.0"
-
-ENV DOCKER_SHA256="c3c8833e227b61fe6ce0bc5c17f97fa547035bef4ef17cf6601f30b0f20f4ce5"
-ENV DOCKER_VERSION="19.03.3"
+    DOCKER_COMPOSE_VERSION="1.24.0" \
+    DOCKER_SHA256="c3c8833e227b61fe6ce0bc5c17f97fa547035bef4ef17cf6601f30b0f20f4ce5" \
+    DOCKER_VERSION="19.03.3"
 
 VOLUME /var/lib/docker
 
@@ -140,20 +131,20 @@ RUN set -ex \
     && docker-compose version
 
 #Python 3.8
-ENV PYTHON_38_VERSION="3.8.1"
-ENV PYTHON_PIP_VERSION="19.3.1"
+ENV PYTHON_38_VERSION="3.8.1" \
+    PYTHON_PIP_VERSION="19.3.1"
 
 COPY tools/runtime_configs/python/$PYTHON_38_VERSION /root/.pyenv/plugins/python-build/share/python-build/$PYTHON_38_VERSION
-RUN   pyenv install $PYTHON_38_VERSION; rm -rf /tmp/*
-RUN   pyenv global  $PYTHON_38_VERSION
 RUN set -ex \
+    pyenv install $PYTHON_38_VERSION && rm -rf /tmp/* \
+    && pyenv global  $PYTHON_38_VERSION \
     && pip3 install --no-cache-dir --upgrade --force-reinstall "pip==$PYTHON_PIP_VERSION" \
     && pip3 install --no-cache-dir --upgrade "PyYAML==5.1.2" \
     && pip3 install --no-cache-dir --upgrade setuptools wheel aws-sam-cli awscli boto3 pipenv virtualenv
 
 #=======================End of layer: runtimes_2  =================
 
-FROM runtimes_2 AS al2_v3
+FROM runtimes AS al2_v3
 
 # Configure SSH
 COPY ssh_config /root/.ssh/config

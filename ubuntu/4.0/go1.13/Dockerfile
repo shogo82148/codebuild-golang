@@ -62,17 +62,14 @@ RUN set -ex \
     && rm /tmp/GitVersion_${GITVERSION_VERSION}.zip \
     && echo "mono /usr/local/GitVersion_${GITVERSION_VERSION}/GitVersion.exe \$@" >> /usr/local/bin/gitversion \
     && chmod +x /usr/local/bin/gitversion \
-    && rm -rf /tmp/*
-
+    && rm -rf /tmp/* \
 # AWS Tools
 # https://docs.aws.amazon.com/eks/latest/userguide/install-aws-iam-authenticator.html https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ECS_CLI_installation.html
-RUN curl -sS -o /usr/local/bin/aws-iam-authenticator https://amazon-eks.s3-us-west-2.amazonaws.com/1.14.6/2019-08-22/bin/linux/amd64/aws-iam-authenticator \
+    && curl -sS -o /usr/local/bin/aws-iam-authenticator https://amazon-eks.s3-us-west-2.amazonaws.com/1.14.6/2019-08-22/bin/linux/amd64/aws-iam-authenticator \
     && curl -sS -o /usr/local/bin/kubectl https://amazon-eks.s3-us-west-2.amazonaws.com/1.14.6/2019-08-22/bin/linux/amd64/kubectl \
     && curl -sS -o /usr/local/bin/ecs-cli https://s3.amazonaws.com/amazon-ecs-cli/ecs-cli-linux-amd64-latest \
-    && chmod +x /usr/local/bin/kubectl /usr/local/bin/aws-iam-authenticator /usr/local/bin/ecs-cli
-
+    && chmod +x /usr/local/bin/kubectl /usr/local/bin/aws-iam-authenticator /usr/local/bin/ecs-cli \
 # Configure SSM
-RUN set -ex \
     && mkdir /tmp/ssm \
     && cd /tmp/ssm \
     && wget https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/debian_amd64/amazon-ssm-agent.deb \
@@ -86,21 +83,21 @@ ENV PATH="/root/.pyenv/shims:/root/.pyenv/bin:$PATH"
 
 #go
 RUN git clone https://github.com/syndbg/goenv.git $HOME/.goenv
-ENV PATH="/root/.goenv/shims:/root/.goenv/bin:/go/bin:$PATH"
-ENV GOENV_DISABLE_GOPATH=1
-ENV GOPATH="/go"
+ENV PATH="/root/.goenv/shims:/root/.goenv/bin:/go/bin:$PATH" \
+    GOENV_DISABLE_GOPATH=1 \
+    GOPATH="/go"
 
 #=======================End of layer: tools  =================
 FROM tools AS runtimes
 
 #**************** PYTHON *****************************************************
-ENV PYTHON_38_VERSION="3.8.1"
-ENV PYTHON_PIP_VERSION="19.3.1"
+ENV PYTHON_38_VERSION="3.8.1" \
+    PYTHON_PIP_VERSION="19.3.1"
 
 COPY tools/runtime_configs/python/$PYTHON_38_VERSION /root/.pyenv/plugins/python-build/share/python-build/$PYTHON_38_VERSION
-RUN   pyenv install $PYTHON_38_VERSION; rm -rf /tmp/*
-RUN   pyenv global  $PYTHON_38_VERSION
 RUN set -ex \
+    pyenv install $PYTHON_38_VERSION && rm -rf /tmp/* \
+    && pyenv global  $PYTHON_38_VERSION \
     && pip3 install --no-cache-dir --upgrade --force-reinstall "pip==$PYTHON_PIP_VERSION" \
     && pip3 install --no-cache-dir --upgrade "PyYAML==5.1.2" \
     && pip3 install --no-cache-dir --upgrade setuptools wheel aws-sam-cli awscli boto3 pipenv virtualenv
@@ -110,22 +107,18 @@ RUN set -ex \
 #****************     GOLANG     ****************************************************
 ENV GOLANG_VERSION="1.13.8"
 RUN goenv install $GOLANG_VERSION; rm -rf /tmp/*; \
-    goenv global  $GOLANG_VERSION
-
-RUN go get -u github.com/golang/dep/cmd/dep
+    goenv global  $GOLANG_VERSION \
+    go get -u github.com/golang/dep/cmd/dep
 #****************      END GOLANG     *******************************
-
-FROM runtimes AS runtimes_n_corretto
 
 #****************        DOCKER    *********************************************
 ENV DOCKER_BUCKET="download.docker.com" \
     DOCKER_CHANNEL="stable" \
     DIND_COMMIT="3b5fac462d21ca164b3778647420016315289034" \
     DOCKER_COMPOSE_VERSION="1.24.0" \
-    SRC_DIR="/usr/src"
-
-ENV DOCKER_SHA256="c3c8833e227b61fe6ce0bc5c17f97fa547035bef4ef17cf6601f30b0f20f4ce5"
-ENV DOCKER_VERSION="19.03.3"
+    SRC_DIR="/usr/src" \
+    DOCKER_SHA256="c3c8833e227b61fe6ce0bc5c17f97fa547035bef4ef17cf6601f30b0f20f4ce5" \
+    DOCKER_VERSION="19.03.3"
 
 # Install Docker
 RUN set -ex \
