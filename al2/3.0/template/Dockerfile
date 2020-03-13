@@ -13,9 +13,6 @@ RUN set -ex \
     && ssh-keyscan -t rsa,dsa -H bitbucket.org >> ~/.ssh/known_hosts \
     && chmod 600 ~/.ssh/known_hosts \
     && yum install -y $EPEL_REPO \
-    && rpm --import https://download.mono-project.com/repo/xamarin.gpg \
-    && curl https://download.mono-project.com/repo/centos7-stable.repo | tee /etc/yum.repos.d/mono-centos7-stable.repo \
-    && amazon-linux-extras enable corretto8 \
     && yum groupinstall -y "Development tools" \
     && yum install -y \
            GeoIP-devel ImageMagick asciidoc bzip2-devel bzr bzrtools cvs cvsps \
@@ -24,7 +21,7 @@ RUN set -ex \
            libcurl-devel libdb-devel libedit-devel libevent-devel libffi-devel \
            libicu-devel libjpeg-devel libpng-devel libserf libsqlite3x-devel \
            libtidy-devel libunwind libwebp-devel libxml2-devel libxslt libxslt-devel \
-           libyaml-devel libzip-devel mariadb-devel mercurial mlocate mono-devel \
+           libyaml-devel libzip-devel mariadb-devel mercurial mlocate \
            ncurses-devel oniguruma-devel openssl openssl-devel perl-DBD-SQLite \
            perl-DBI perl-HTTP-Date perl-IO-Pty-Easy perl-TimeDate perl-YAML-LibYAML \
            postgresql-devel procps-ng python-configobj readline-devel rsync sgml-common \

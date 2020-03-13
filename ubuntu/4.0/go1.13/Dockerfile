@@ -10,7 +10,6 @@ RUN set -ex \
     && apt-get update \
     && apt install -y apt-transport-https gnupg ca-certificates \
     && apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF \
-    && echo "deb https://download.mono-project.com/repo/ubuntu stable-bionic main" | tee /etc/apt/sources.list.d/mono-official-stable.list \
     && apt-get install software-properties-common -y --no-install-recommends \
     && apt-add-repository -y ppa:git-core/ppa \
     && apt-get update \
@@ -36,7 +35,7 @@ RUN set -ex \
           libpq-dev libreadline-dev libserf-1-1 libsqlite3-dev libssl-dev \
           libsvn1 libsvn-perl libtcl8.6 libtidy-dev libtimedate-perl \
           libtool libwebp-dev libxml2-dev libxml2-utils libxslt1-dev \
-          libyaml-dev libyaml-perl llvm locales make mercurial mlocate mono-devel \
+          libyaml-dev libyaml-perl llvm locales make mercurial mlocate \
           netbase openssl patch pkg-config procps python-bzrlib \
           python-configobj python-openssl rsync sgml-base sgml-data subversion \
           tar tcl tcl8.6 tk tk-dev unzip wget xfsprogs xml-core xmlto xsltproc \
