@@ -29,6 +29,8 @@ RUN set -ex \
            perl-DBI perl-HTTP-Date perl-IO-Pty-Easy perl-TimeDate perl-YAML-LibYAML \
            postgresql-devel procps-ng python-configobj readline-devel rsync sgml-common \
            subversion-perl tar tcl tk vim wget which xfsprogs xmlto xorg-x11-server-Xvfb xz-devel \
+    && rm -rf /var/cache/yum/* \
+    && yum clean all \
     && wget https://github.com/stedolan/jq/releases/download/jq-${JQ_VERSION}/jq-linux64 -O /usr/local/bin/jq \
     && echo "$JQ_SHA256 /usr/local/bin/jq" | sha256sum -c - \
     && chmod +x /usr/local/bin/jq
@@ -64,7 +66,9 @@ RUN set -ex \
     && ln -s /usr/lib64/libgit2.so.0.26.6 /usr/lib64/libgit2-15e1193.so \
     && echo "dotnet /usr/local/GitVersion_${GITVERSION_VERSION}/GitVersion.dll \$@" >> /usr/local/bin/gitversion \
     && chmod +x /usr/local/bin/gitversion \
-    && rm -rf  /tmp/*
+    && rm -rf  /tmp/* \
+    && rm -rf /var/cache/yum/* \
+    && yum clean all
 
 # AWS Tools
 # https://docs.aws.amazon.com/eks/latest/userguide/install-aws-iam-authenticator.html https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ECS_CLI_installation.html
@@ -75,7 +79,9 @@ RUN curl -sS -o /usr/local/bin/aws-iam-authenticator https://amazon-eks.s3-us-we
 
 # Configure SSM
 RUN set -ex \
-    && yum install -y https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm
+    && yum install -y https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm \
+    && rm -rf /var/cache/yum/* \
+    && yum clean all
 
 # Install env tools for runtimes
 
