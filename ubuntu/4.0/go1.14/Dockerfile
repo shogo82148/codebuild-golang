@@ -71,7 +71,7 @@ RUN set -ex \
 # Configure SSM
     && mkdir /tmp/ssm \
     && cd /tmp/ssm \
-    && wget https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/debian_amd64/amazon-ssm-agent.deb \
+    && wget https://ec2-downloads-windows.s3.amazonaws.com/SSMAgent/latest/debian_amd64/amazon-ssm-agent.deb \
     && dpkg -i amazon-ssm-agent.deb
 
 # Install env tools for runtimes
@@ -105,9 +105,9 @@ RUN set -ex \
 
 #****************     GOLANG     ****************************************************
 ENV GOLANG_VERSION="1.14.0"
-RUN goenv install $GOLANG_VERSION; rm -rf /tmp/*; \
-    goenv global  $GOLANG_VERSION \
-    go get -u github.com/golang/dep/cmd/dep
+RUN goenv install $GOLANG_VERSION && rm -rf /tmp/* \
+    && goenv global  $GOLANG_VERSION \
+    && go get -u github.com/golang/dep/cmd/dep
 #****************      END GOLANG     *******************************
 
 #****************        DOCKER    *********************************************

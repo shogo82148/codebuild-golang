@@ -105,9 +105,9 @@ RUN set -ex \
 
 #****************     GOLANG     ****************************************************
 ENV GOLANG_VERSION="%%GOLANG_VERSION%%"
-RUN goenv install $GOLANG_VERSION; rm -rf /tmp/*; \
-    goenv global  $GOLANG_VERSION \
-    go get -u github.com/golang/dep/cmd/dep
+RUN goenv install $GOLANG_VERSION && rm -rf /tmp/* \
+    && goenv global  $GOLANG_VERSION \
+    && go get -u github.com/golang/dep/cmd/dep
 #****************      END GOLANG     *******************************
 
 #****************        DOCKER    *********************************************

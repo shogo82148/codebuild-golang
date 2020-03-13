@@ -73,7 +73,7 @@ RUN set -ex \
     && curl -sS -o /usr/local/bin/ecs-cli https://amazon-ecs-cli.s3.amazonaws.com/ecs-cli-linux-amd64-latest \
     && chmod +x /usr/local/bin/kubectl /usr/local/bin/aws-iam-authenticator /usr/local/bin/ecs-cli \
 # Configure SSM
-    && yum install -y https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm \
+    && yum install -y https://ec2-downloads-windows.s3.amazonaws.com/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm \
     && rm -rf /var/cache/yum/* \
     && yum clean all
 
@@ -94,12 +94,11 @@ ENV PATH="/root/.goenv/shims:/root/.goenv/bin:/go/bin:$PATH" \
 FROM tools AS runtimes
 
 #****************     GOLANG     ****************************************************
-
-RUN goenv install 1.14.0; rm -rf /tmp/*; \
-    goenv global  1.14.0 \
-    go get -u github.com/golang/dep/cmd/dep
-
-#****************      END GOLANG     ****************************************************
+ENV GOLANG_VERSION="1.14.0"
+RUN goenv install $GOLANG_VERSION && rm -rf /tmp/* \
+    && goenv global  $GOLANG_VERSION \
+    && go get -u github.com/golang/dep/cmd/dep
+#****************      END GOLANG     *******************************
 
 #Docker 19
 ENV DOCKER_BUCKET="download.docker.com" \

@@ -94,12 +94,11 @@ ENV PATH="/root/.goenv/shims:/root/.goenv/bin:/go/bin:$PATH" \
 FROM tools AS runtimes
 
 #****************     GOLANG     ****************************************************
-
-RUN goenv install 1.13.8; rm -rf /tmp/*; \
-    goenv global  1.13.8 \
-    go get -u github.com/golang/dep/cmd/dep
-
-#****************      END GOLANG     ****************************************************
+ENV GOLANG_VERSION="1.13.8"
+RUN goenv install $GOLANG_VERSION && rm -rf /tmp/* \
+    && goenv global  $GOLANG_VERSION \
+    && go get -u github.com/golang/dep/cmd/dep
+#****************      END GOLANG     *******************************
 
 #Docker 19
 ENV DOCKER_BUCKET="download.docker.com" \
