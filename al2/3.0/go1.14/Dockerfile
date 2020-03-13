@@ -1,6 +1,8 @@
 FROM amazonlinux:2 AS core
 
-ENV EPEL_REPO="https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm"
+ENV EPEL_REPO="https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm" \
+    JQ_VERSION="1.6" \
+    JQ_SHA256="af986793a515d500ab2d35f8d2aecd656e764504b789b66d7e1a0b727a124c44"
 
 # Install git, SSH, and other utilities
 RUN set -ex \
@@ -18,7 +20,7 @@ RUN set -ex \
     && yum install -y \
            GeoIP-devel ImageMagick asciidoc bzip2-devel bzr bzrtools cvs cvsps \
            docbook-dtds docbook-style-xsl dpkg-dev e2fsprogs expat-devel expect fakeroot \
-           glib2-devel groff gzip icu iptables jq krb5-server libargon2-devel \
+           glib2-devel groff gzip icu iptables krb5-server libargon2-devel \
            libcurl-devel libdb-devel libedit-devel libevent-devel libffi-devel \
            libicu-devel libjpeg-devel libpng-devel libserf libsqlite3x-devel \
            libtidy-devel libunwind libwebp-devel libxml2-devel libxslt libxslt-devel \
@@ -26,7 +28,10 @@ RUN set -ex \
            ncurses-devel oniguruma-devel openssl openssl-devel perl-DBD-SQLite \
            perl-DBI perl-HTTP-Date perl-IO-Pty-Easy perl-TimeDate perl-YAML-LibYAML \
            postgresql-devel procps-ng python-configobj readline-devel rsync sgml-common \
-           subversion-perl tar tcl tk vim wget which xfsprogs xmlto xorg-x11-server-Xvfb xz-devel 
+           subversion-perl tar tcl tk vim wget which xfsprogs xmlto xorg-x11-server-Xvfb xz-devel \
+    && wget https://github.com/stedolan/jq/releases/download/jq-${JQ_VERSION}/jq-linux64 -O /usr/local/bin/jq \
+    && echo "$JQ_SHA256 /usr/local/bin/jq" | sha256sum -c - \
+    && chmod +x /usr/local/bin/jq
 
 RUN useradd codebuild-user
 

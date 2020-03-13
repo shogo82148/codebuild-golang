@@ -1,6 +1,8 @@
 FROM ubuntu:18.04 AS core
 
-ENV DEBIAN_FRONTEND="noninteractive"
+ENV DEBIAN_FRONTEND="noninteractive" \
+    JQ_VERSION="1.6" \
+    JQ_SHA256="af986793a515d500ab2d35f8d2aecd656e764504b789b66d7e1a0b727a124c44"
 
 # Install git, SSH, and other utilities
 RUN set -ex \
@@ -24,7 +26,7 @@ RUN set -ex \
           apt-utils asciidoc autoconf automake build-essential bzip2 \
           bzr curl cvs cvsps dirmngr docbook-xml docbook-xsl dpkg-dev \
           e2fsprogs expect fakeroot file g++ gcc gettext gettext-base \
-          git groff gzip imagemagick iptables jq less libapr1 libaprutil1 \
+          git groff gzip imagemagick iptables less libapr1 libaprutil1 \
           libargon2-0-dev libbz2-dev libc6-dev libcurl4-openssl-dev \
           libdb-dev libdbd-sqlite3-perl libdbi-perl libdpkg-perl \
           libedit-dev liberror-perl libevent-dev libffi-dev libgeoip-dev \
@@ -39,7 +41,10 @@ RUN set -ex \
           python-configobj python-openssl rsync sgml-base sgml-data subversion \
           tar tcl tcl8.6 tk tk-dev unzip wget xfsprogs xml-core xmlto xsltproc \
           libzip4 libzip-dev vim xvfb xz-utils zip zlib1g-dev \
-    && rm -rf /var/lib/apt/lists/* 
+    && rm -rf /var/lib/apt/lists/* \
+    && wget https://github.com/stedolan/jq/releases/download/jq-${JQ_VERSION}/jq-linux64 -O /usr/local/bin/jq \
+    && echo "$JQ_SHA256 /usr/local/bin/jq" | sha256sum -c - \
+    && chmod +x /usr/local/bin/jq
 
 RUN useradd codebuild-user
 
