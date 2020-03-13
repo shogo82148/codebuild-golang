@@ -35,3 +35,10 @@
     && echo checking update for 1.14-amazonlinux2-2.0 >&2 \
     && ./update.pl 1.14
 ) || exit 1
+(
+    cd al2/3.0 \
+    && echo checking update for 1.13-amazonlinux2-3.0 >&2 \
+    && ./update.pl 1.14 \
+    && echo checking update for 1.14-amazonlinux2-3.0 >&2 \
+    && ./update.pl 1.14
+) || exit 1

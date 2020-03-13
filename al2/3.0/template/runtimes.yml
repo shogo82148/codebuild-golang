@@ -1,0 +1,16 @@
+version: 0.1
+
+runtimes:
+  golang:
+    versions:
+      %%GOLANG_MINOR_VERSION%%:
+        commands:
+          - echo "Installing Go version %%GOLANG_MINOR_VERSION%% ..."
+  docker:
+    versions:
+      18:
+        commands:
+          - echo "Using Docker 19"
+      19:
+        commands:
+          - echo "Using Docker 19"
