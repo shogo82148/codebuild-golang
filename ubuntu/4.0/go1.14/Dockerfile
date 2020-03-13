@@ -74,6 +74,10 @@ RUN set -ex \
 
 # Install env tools for runtimes
 
+#python
+RUN curl https://pyenv.run | bash
+ENV PATH="/root/.pyenv/shims:/root/.pyenv/bin:$PATH"
+
 #go
 RUN git clone https://github.com/syndbg/goenv.git $HOME/.goenv
 ENV PATH="/root/.goenv/shims:/root/.goenv/bin:/go/bin:$PATH"
