@@ -49,23 +49,7 @@ RUN set -ex \
    && make -j4 prefix=/usr \
    && make install prefix=/usr \
    && cd .. ; rm -rf git-$GIT_VERSION \
-   && rm -rf $GIT_TAR_FILE /tmp/*
-
-# Install GitVersion
-ENV GITVERSION_VERSION="5.1.2" \
-    LIBGIT2_PKG="https://rpmfind.net/linux/centos/7/extras/x86_64/Packages/libgit2-0.26.6-1.el7.x86_64.rpm"
-RUN set -ex \
-    && yum install -y $LIBGIT2_PKG \
-    && wget -nv https://github.com/GitTools/GitVersion/archive/${GITVERSION_VERSION}.zip -O /tmp/GitVersion_${GITVERSION_VERSION}.zip \
-    && mkdir -p /usr/local/GitVersion_${GITVERSION_VERSION} \
-    && unzip /tmp/GitVersion_${GITVERSION_VERSION}.zip -d /usr/local/GitVersion_${GITVERSION_VERSION} \
-    && rm /tmp/GitVersion_${GITVERSION_VERSION}.zip \
-    && ln -s /usr/lib64/libgit2.so.0.26.6 /usr/lib64/libgit2-15e1193.so \
-    && echo "dotnet /usr/local/GitVersion_${GITVERSION_VERSION}/GitVersion.dll \$@" >> /usr/local/bin/gitversion \
-    && chmod +x /usr/local/bin/gitversion \
-    && rm -rf  /tmp/* \
-    && rm -rf /var/cache/yum/* \
-    && yum clean all \
+   && rm -rf $GIT_TAR_FILE /tmp/* \
 # AWS Tools
 # https://docs.aws.amazon.com/eks/latest/userguide/install-aws-iam-authenticator.html https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ECS_CLI_installation.html
     && curl -sS -o /usr/local/bin/aws-iam-authenticator https://amazon-eks.s3-us-west-2.amazonaws.com/1.14.6/2019-08-22/bin/linux/amd64/aws-iam-authenticator \
