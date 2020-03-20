@@ -72,12 +72,6 @@ RUN set -ex \
 RUN curl https://pyenv.run | bash
 ENV PATH="/root/.pyenv/shims:/root/.pyenv/bin:$PATH"
 
-#go
-RUN git clone https://github.com/syndbg/goenv.git $HOME/.goenv
-ENV PATH="/root/.goenv/shims:/root/.goenv/bin:/go/bin:$PATH" \
-    GOENV_DISABLE_GOPATH=1 \
-    GOPATH="/go"
-
 #=======================End of layer: tools  =================
 FROM tools AS runtimes
 
@@ -95,12 +89,28 @@ RUN set -ex \
 
 #**************** END PYTHON *****************************************************
 
-#****************     GOLANG     ****************************************************
-ENV GOLANG_VERSION="1.14.1"
-RUN goenv install $GOLANG_VERSION && rm -rf /tmp/* \
-    && goenv global  $GOLANG_VERSION \
-    && go get -u github.com/golang/dep/cmd/dep
-#****************      END GOLANG     *******************************
+#****************     GO     **********************************************************
+ENV GOLANG_VERSION="1.14.1" \
+    GOLANG_DOWNLOAD_SHA256="2f49eb17ce8b48c680cdb166ffd7389702c0dec6effa090c324804a5cac8a7f8" \
+    GOPATH="/go" \
+    DEP_VERSION="0.5.4" \
+    DEP_BINARY="dep-linux-amd64"
+
+RUN set -ex \
+    && mkdir -p "$GOPATH/src" "$GOPATH/bin" \
+    && chmod -R 777 "$GOPATH" \
+    && apt-get update && apt-get install -y --no-install-recommends \
+        pkg-config \
+    && apt-get clean \
+    && wget "https://dl.google.com/go/go$GOLANG_VERSION.linux-amd64.tar.gz" -O /tmp/golang.tar.gz \
+    && echo "$GOLANG_DOWNLOAD_SHA256 /tmp/golang.tar.gz" | sha256sum -c - \
+    && tar -xzf /tmp/golang.tar.gz -C /usr/local \
+    && rm -fr /var/lib/apt/lists/* /tmp/* /var/tmp/* \
+    && wget "https://github.com/golang/dep/releases/download/v$DEP_VERSION/$DEP_BINARY" -O "$GOPATH/bin/dep" \
+    && chmod +x "$GOPATH/bin/dep"
+
+ENV PATH="$GOPATH/bin:/usr/local/go/bin:$PATH"
+#****************     END GO     **********************************************************
 
 #****************        DOCKER    *********************************************
 ENV DOCKER_BUCKET="download.docker.com" \
