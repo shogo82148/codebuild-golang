@@ -96,7 +96,7 @@ RUN set -ex \
 #**************** END PYTHON *****************************************************
 
 #****************     GOLANG     ****************************************************
-ENV GOLANG_VERSION="1.13.8"
+ENV GOLANG_VERSION="1.13.9"
 RUN goenv install $GOLANG_VERSION && rm -rf /tmp/* \
     && goenv global  $GOLANG_VERSION \
     && go get -u github.com/golang/dep/cmd/dep

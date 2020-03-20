@@ -78,7 +78,7 @@ ENV PATH="/root/.goenv/shims:/root/.goenv/bin:/go/bin:$PATH" \
 FROM tools AS runtimes
 
 #****************     GOLANG     ****************************************************
-ENV GOLANG_VERSION="1.14.0"
+ENV GOLANG_VERSION="1.14.1"
 RUN goenv install $GOLANG_VERSION && rm -rf /tmp/* \
     && goenv global  $GOLANG_VERSION \
     && go get -u github.com/golang/dep/cmd/dep
