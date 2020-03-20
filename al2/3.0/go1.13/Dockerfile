@@ -67,22 +67,29 @@ RUN set -ex \
 RUN curl https://pyenv.run | bash
 ENV PATH="/root/.pyenv/shims:/root/.pyenv/bin:$PATH"
 
-##go
-RUN git clone https://github.com/syndbg/goenv.git $HOME/.goenv
-ENV PATH="/root/.goenv/shims:/root/.goenv/bin:/go/bin:$PATH" \
-    GOENV_DISABLE_GOPATH=1 \
-    GOPATH="/go"
-
 #=======================End of layer: tools  =================
 
 FROM tools AS runtimes
 
-#****************     GOLANG     ****************************************************
-ENV GOLANG_VERSION="1.13.8"
-RUN goenv install $GOLANG_VERSION && rm -rf /tmp/* \
-    && goenv global  $GOLANG_VERSION \
-    && go get -u github.com/golang/dep/cmd/dep
-#****************      END GOLANG     *******************************
+#****************     GO     **********************************************************
+ENV GOLANG_VERSION="1.13.9" \
+    GOLANG_DOWNLOAD_SHA256="f4ad8180dd0aaf7d7cda7e2b0a2bf27e84131320896d376549a7d849ecf237d7" \
+    GOPATH="/go" \
+    DEP_VERSION="0.5.4" \
+    DEP_BINARY="dep-linux-amd64"
+
+RUN set -ex \
+    && mkdir -p "$GOPATH/src" "$GOPATH/bin" \
+    && chmod -R 777 "$GOPATH" \
+    && wget "https://dl.google.com/go/go$GOLANG_VERSION.linux-amd64.tar.gz" -O /tmp/golang.tar.gz \
+    && echo "$GOLANG_DOWNLOAD_SHA256 /tmp/golang.tar.gz" | sha256sum -c - \
+    && tar -xzf /tmp/golang.tar.gz -C /usr/local \
+    && rm -fr /tmp/* /var/tmp/* \
+    && wget "https://github.com/golang/dep/releases/download/v$DEP_VERSION/$DEP_BINARY" -O "$GOPATH/bin/dep" \
+    && chmod +x "$GOPATH/bin/dep"
+
+ENV PATH="$GOPATH/bin:/usr/local/go/bin:$PATH"
+#****************     END GO     **********************************************************
 
 #Docker 19
 ENV DOCKER_BUCKET="download.docker.com" \
