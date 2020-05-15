@@ -11,7 +11,7 @@
 
 FROM amazonlinux:2
 
-ENV GOLANG_VERSION="1.14.2" \
+ENV GOLANG_VERSION="1.14.3" \
  PYTHON_VERSION="3.8.0" \
  JQ_VERSION="1.6" \
  JQ_SHA256="af986793a515d500ab2d35f8d2aecd656e764504b789b66d7e1a0b727a124c44" \
@@ -162,7 +162,7 @@ RUN set -ex \
     && pip3 install awscli boto3
 
 #****************     GO     **********************************************************
-ENV GOLANG_DOWNLOAD_SHA256="6272d6e940ecb71ea5636ddb5fab3933e087c1356173c61f4a803895e947ebb3" \
+ENV GOLANG_DOWNLOAD_SHA256="1c39eac4ae95781b066c144c58e45d6859652247f7515f0d2cba7be7d57d2226" \
     GOPATH="/go" \
     DEP_VERSION="0.5.1" \
     DEP_BINARY="dep-linux-amd64"

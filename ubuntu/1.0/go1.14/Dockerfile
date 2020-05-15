@@ -11,7 +11,7 @@
 
 FROM ubuntu:18.04
 
-ENV GOLANG_VERSION="1.14.2" \
+ENV GOLANG_VERSION="1.14.3" \
  DOCKER_VERSION="18.09.1" \
  DOCKER_COMPOSE_VERSION="1.23.2"
 
@@ -106,7 +106,7 @@ COPY ssh_config /root/.ssh/config
 COPY dockerd-entrypoint.sh /usr/local/bin/
 
 #****************     GO     **********************************************************
-ENV GOLANG_DOWNLOAD_SHA256="6272d6e940ecb71ea5636ddb5fab3933e087c1356173c61f4a803895e947ebb3" \
+ENV GOLANG_DOWNLOAD_SHA256="1c39eac4ae95781b066c144c58e45d6859652247f7515f0d2cba7be7d57d2226" \
     GOPATH="/go"
 RUN set -ex \
     && mkdir -p "$GOPATH/src" "$GOPATH/bin" \
