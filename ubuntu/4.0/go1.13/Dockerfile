@@ -90,8 +90,8 @@ RUN set -ex \
 #**************** END PYTHON *****************************************************
 
 #****************     GO     **********************************************************
-ENV GOLANG_VERSION="1.13.11" \
-    GOLANG_DOWNLOAD_SHA256="a4d71ca9e02923fa96669a4b5faf78ee8331b18e7209b09dd87fe763b4838ada" \
+ENV GOLANG_VERSION="1.13.12" \
+    GOLANG_DOWNLOAD_SHA256="9cacc6653563771b458c13056265aa0c21b8a23ca9408278484e4efde4160618" \
     GOPATH="/go" \
     DEP_VERSION="0.5.4" \
     DEP_BINARY="dep-linux-amd64"
