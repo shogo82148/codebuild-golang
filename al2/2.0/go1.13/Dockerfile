@@ -11,17 +11,16 @@
 
 FROM amazonlinux:2
 
-ENV GOLANG_VERSION="1.13.12" \
- PYTHON_VERSION="3.8.0" \
- JQ_VERSION="1.6" \
- JQ_SHA256="af986793a515d500ab2d35f8d2aecd656e764504b789b66d7e1a0b727a124c44" \
- DOCKER_VERSION="19.03.1" \
- DOCKER_COMPOSE_VERSION="1.24.0"
-
 #****************        Utilities     ********************************************* 
-ENV DOCKER_BUCKET="download.docker.com" \    
+ENV GOLANG_VERSION="1.13.12" \
+    PYTHON_VERSION="3.8.0" \
+    JQ_VERSION="1.6" \
+    JQ_SHA256="af986793a515d500ab2d35f8d2aecd656e764504b789b66d7e1a0b727a124c44" \
+    DOCKER_VERSION="19.03.3" \
+    DOCKER_SHA256="c3c8833e227b61fe6ce0bc5c17f97fa547035bef4ef17cf6601f30b0f20f4ce5" \
+    DOCKER_COMPOSE_VERSION="1.24.0" \
+    DOCKER_BUCKET="download.docker.com" \
     DOCKER_CHANNEL="stable" \
-    DOCKER_SHA256="6e7d8e24ee46b13d7547d751696d01607d19c8224c1b2c867acc8c779e77734b" \
     DIND_COMMIT="3b5fac462d21ca164b3778647420016315289034" \    
     GITVERSION_VERSION="4.0.0" \
     DEBIAN_FRONTEND="noninteractive" \
@@ -59,6 +58,19 @@ RUN set -ex \
     && wget https://github.com/stedolan/jq/releases/download/jq-${JQ_VERSION}/jq-linux64 -O /usr/local/bin/jq \
     && echo "$JQ_SHA256 /usr/local/bin/jq" | sha256sum -c - \
     && chmod +x /usr/local/bin/jq
+
+# Install Git
+RUN set -ex \
+   && GIT_VERSION=2.26.2 \
+   && GIT_TAR_FILE=git-$GIT_VERSION.tar.gz \
+   && GIT_SRC=https://github.com/git/git/archive/v${GIT_VERSION}.tar.gz  \
+   && curl -L -o $GIT_TAR_FILE $GIT_SRC \
+   && tar zxvf $GIT_TAR_FILE \
+   && cd git-$GIT_VERSION \
+   && make -j4 prefix=/usr \
+   && make install prefix=/usr \
+   && cd .. ; rm -rf git-$GIT_VERSION \
+   && rm -rf $GIT_TAR_FILE /tmp/*
 
 # Install Docker
 RUN set -ex \
