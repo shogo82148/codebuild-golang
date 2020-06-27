@@ -121,7 +121,7 @@ RUN set -ex \
 #****************     GO     **********************************************************
 ENV GOLANG_DOWNLOAD_SHA256="%%GOLANG_DOWNLOAD_SHA256%%" \
     GOPATH="/go" \
-    DEP_VERSION="0.5.1" \
+    DEP_VERSION="0.5.4" \
     DEP_BINARY="dep-linux-amd64"
 
 RUN set -ex \
