@@ -110,7 +110,7 @@ RUN set -ex \
 #****************     GO     **********************************************************
 ENV GOLANG_DOWNLOAD_SHA256="aed845e4185a0b2a3c3d5e1d0a35491702c55889192bb9c30e67a3de6849c067" \
     GOPATH="/go" \
-    DEP_VERSION="0.5.1" \
+    DEP_VERSION="0.5.4" \
     DEP_BINARY="dep-linux-amd64"
 
 RUN set -ex \
