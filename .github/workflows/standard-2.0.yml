@@ -17,6 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
+        fail-fast: false
         golang:
           - "1.13"
           - "1.14"
