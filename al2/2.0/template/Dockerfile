@@ -11,17 +11,16 @@
 
 FROM amazonlinux:2
 
-ENV GOLANG_VERSION="%%GOLANG_VERSION%%" \
- PYTHON_VERSION="3.8.0" \
- JQ_VERSION="1.6" \
- JQ_SHA256="af986793a515d500ab2d35f8d2aecd656e764504b789b66d7e1a0b727a124c44" \
- DOCKER_VERSION="19.03.1" \
- DOCKER_COMPOSE_VERSION="1.24.0"
-
 #****************        Utilities     ********************************************* 
-ENV DOCKER_BUCKET="download.docker.com" \    
-    DOCKER_CHANNEL="stable" \
+ENV GOLANG_VERSION="%%GOLANG_VERSION%%" \
+    PYTHON_VERSION="3.8.0" \
+    JQ_VERSION="1.6" \
+    JQ_SHA256="af986793a515d500ab2d35f8d2aecd656e764504b789b66d7e1a0b727a124c44" \
+    DOCKER_VERSION="19.03.1" \
     DOCKER_SHA256="6e7d8e24ee46b13d7547d751696d01607d19c8224c1b2c867acc8c779e77734b" \
+    DOCKER_COMPOSE_VERSION="1.24.0" \
+    DOCKER_BUCKET="download.docker.com" \
+    DOCKER_CHANNEL="stable" \
     DIND_COMMIT="3b5fac462d21ca164b3778647420016315289034" \    
     GITVERSION_VERSION="4.0.0" \
     DEBIAN_FRONTEND="noninteractive" \
