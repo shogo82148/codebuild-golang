@@ -30,7 +30,8 @@ do {
 } @versions;
 my $latest = pop @versions;
 my $sha256 = `curl -fsSL "https://storage.googleapis.com/golang/go${latest}.linux-amd64.tar.gz.sha256"`;
-mkdir $output unless -d $output;
+system("rm", "-rf", $output);
+mkdir $output;
 
 sub execute_template {
     my ($input, $output) = @_;
@@ -57,10 +58,8 @@ execute_template 'template/ssh_config', "$output/ssh_config";
 execute_template 'template/dockerd-entrypoint.sh', "$output/dockerd-entrypoint.sh";
 execute_template 'template/runtimes.yml', "$output/runtimes.yml";
 execute_template 'template/amazon-ssm-agent.json', "$output/amazon-ssm-agent.json";
-mkdir "$output/tools";
-mkdir "$output/tools/runtime_configs";
-mkdir "$output/tools/runtime_configs/python";
-execute_template 'template/tools/runtime_configs/python/3.8.1', "$output/tools/runtime_configs/python/3.8.1";
+system("mkdir", "-p", "$output/tools/runtime_configs/python");
+execute_template 'template/tools/runtime_configs/python/3.8.3', "$output/tools/runtime_configs/python/3.8.3";
 `chmod +x "$output/dockerd-entrypoint.sh"`;
 
 1;
