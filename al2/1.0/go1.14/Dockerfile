@@ -107,13 +107,6 @@ RUN set -ex \
     && pip3 install --no-cache-dir --upgrade "PyYAML==5.1.2" \
     && pip3 install --no-cache-dir --upgrade setuptools wheel aws-sam-cli awscli boto3 pipenv virtualenv
 
-ENV PATH="/root/.local/bin:$PATH"
-
-RUN set -ex \
-    && pip3 install --user aws-sam-cli \
-    && sam --version \
-    && pip3 install awscli boto3
-
 #****************     GO     **********************************************************
 ENV GOLANG_DOWNLOAD_SHA256="aed845e4185a0b2a3c3d5e1d0a35491702c55889192bb9c30e67a3de6849c067" \
     GOPATH="/go" \
