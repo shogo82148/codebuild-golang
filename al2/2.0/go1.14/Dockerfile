@@ -41,7 +41,7 @@ RUN set -ex \
            libcurl-devel libdb-devel libedit-devel libevent-devel libffi-devel \
            libicu-devel libjpeg-devel libpng-devel libserf libsqlite3x-devel \
            libtidy-devel libunwind libwebp-devel libxml2-devel libxslt libxslt-devel \
-           libyaml-devel libzip-devel mariadb-devel mercurial mlocate mono-devel \
+           libyaml-devel libzip-devel mariadb-devel mercurial mlocate \
            ncurses-devel oniguruma-devel openssl openssl-devel perl-DBD-SQLite \
            perl-DBI perl-HTTP-Date perl-IO-Pty-Easy perl-TimeDate perl-YAML-LibYAML \
            postgresql-devel procps-ng python-configobj readline-devel rsync sgml-common \
