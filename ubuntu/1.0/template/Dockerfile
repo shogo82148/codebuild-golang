@@ -11,14 +11,13 @@
 
 FROM ubuntu:18.04
 
-ENV GOLANG_VERSION="%%GOLANG_VERSION%%" \
- DOCKER_VERSION="18.09.1" \
- DOCKER_COMPOSE_VERSION="1.23.2"
-
 #****************        Utilities     ********************************************* 
-ENV DOCKER_BUCKET="download.docker.com" \    
+ENV GOLANG_VERSION="%%GOLANG_VERSION%%" \
+    DOCKER_VERSION="18.09.6" \
+    DOCKER_SHA256="1f3f6774117765279fce64ee7f76abbb5f260264548cf80631d68fb2d795bb09" \
+    DOCKER_COMPOSE_VERSION="1.24.0" \
+    DOCKER_BUCKET="download.docker.com" \    
     DOCKER_CHANNEL="stable" \
-    DOCKER_SHA256="c9959e42b637fb7362899ac1d1aeef2a966fa0ea85631da91f4c4a7a9ec29644" \
     DIND_COMMIT="3b5fac462d21ca164b3778647420016315289034" \    
     GITVERSION_VERSION="4.0.0" \
     JQ_VERSION="1.6" \
@@ -90,13 +89,24 @@ RUN set -ex \
     && docker-compose version
 
 # https://docs.aws.amazon.com/eks/latest/userguide/install-aws-iam-authenticator.html https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ECS_CLI_installation.html
-RUN curl -sS -o /usr/local/bin/aws-iam-authenticator https://amazon-eks.s3-us-west-2.amazonaws.com/1.11.5/2018-12-06/bin/linux/amd64/aws-iam-authenticator \
- && curl -sS -o /usr/local/bin/kubectl https://amazon-eks.s3-us-west-2.amazonaws.com/1.11.5/2018-12-06/bin/linux/amd64/kubectl \
+RUN curl -sS -o /usr/local/bin/aws-iam-authenticator https://amazon-eks.s3-us-west-2.amazonaws.com/1.14.6/2019-08-22/bin/linux/amd64/aws-iam-authenticator \
+ && curl -sS -o /usr/local/bin/kubectl https://amazon-eks.s3-us-west-2.amazonaws.com/1.14.6/2019-08-22/bin/linux/amd64/kubectl \
  && curl -sS -o /usr/local/bin/ecs-cli https://amazon-ecs-cli.s3.amazonaws.com/ecs-cli-linux-amd64-latest \
  && chmod +x /usr/local/bin/kubectl /usr/local/bin/aws-iam-authenticator /usr/local/bin/ecs-cli
 
+#**************** PYTHON *****************************************************
+ENV PYTHON_38_VERSION="3.8.1" \
+    PYTHON_PIP_VERSION="19.3.1"
+RUN curl https://pyenv.run | bash
+ENV PATH="/root/.pyenv/shims:/root/.pyenv/bin:$PATH"
+COPY tools/runtime_configs/python/$PYTHON_38_VERSION /root/.pyenv/plugins/python-build/share/python-build/$PYTHON_38_VERSION
 RUN set -ex \
-&& pip3 install awscli boto3  
+    && env PYTHON_CONFIGURE_OPTS="--enable-shared" pyenv install $PYTHON_38_VERSION \
+    && rm -rf /tmp/* \
+    && pyenv global $PYTHON_38_VERSION \
+    && pip3 install --no-cache-dir --upgrade --force-reinstall "pip==$PYTHON_PIP_VERSION" \
+    && pip3 install --no-cache-dir --upgrade "PyYAML==5.1.2" \
+    && pip3 install --no-cache-dir --upgrade setuptools wheel aws-sam-cli awscli boto3 pipenv virtualenv
 
 VOLUME /var/lib/docker
 
