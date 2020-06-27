@@ -60,6 +60,19 @@ RUN set -ex \
     && echo "$JQ_SHA256 /usr/local/bin/jq" | sha256sum -c - \
     && chmod +x /usr/local/bin/jq
 
+# Install Git
+RUN set -ex \
+   && GIT_VERSION=2.26.2 \
+   && GIT_TAR_FILE=git-$GIT_VERSION.tar.gz \
+   && GIT_SRC=https://github.com/git/git/archive/v${GIT_VERSION}.tar.gz  \
+   && curl -L -o $GIT_TAR_FILE $GIT_SRC \
+   && tar zxvf $GIT_TAR_FILE \
+   && cd git-$GIT_VERSION \
+   && make -j4 prefix=/usr \
+   && make install prefix=/usr \
+   && cd .. ; rm -rf git-$GIT_VERSION \
+   && rm -rf $GIT_TAR_FILE /tmp/*
+
 # Install Docker
 RUN set -ex \
     && curl -fSL "https://${DOCKER_BUCKET}/linux/static/${DOCKER_CHANNEL}/x86_64/docker-${DOCKER_VERSION}.tgz" -o docker.tgz \
@@ -79,8 +92,8 @@ RUN set -ex \
     && docker-compose version
 
 # https://docs.aws.amazon.com/eks/latest/userguide/install-aws-iam-authenticator.html https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ECS_CLI_installation.html
-RUN curl -sS -o /usr/local/bin/aws-iam-authenticator https://amazon-eks.s3-us-west-2.amazonaws.com/1.11.5/2018-12-06/bin/linux/amd64/aws-iam-authenticator \
- && curl -sS -o /usr/local/bin/kubectl https://amazon-eks.s3-us-west-2.amazonaws.com/1.11.5/2018-12-06/bin/linux/amd64/kubectl \
+RUN curl -sS -o /usr/local/bin/aws-iam-authenticator https://amazon-eks.s3-us-west-2.amazonaws.com/1.14.6/2019-08-22/bin/linux/amd64/aws-iam-authenticator \
+ && curl -sS -o /usr/local/bin/kubectl https://amazon-eks.s3-us-west-2.amazonaws.com/1.14.6/2019-08-22/bin/linux/amd64/kubectl \
  && curl -sS -o /usr/local/bin/ecs-cli https://amazon-ecs-cli.s3.amazonaws.com/ecs-cli-linux-amd64-latest \
  && chmod +x /usr/local/bin/kubectl /usr/local/bin/aws-iam-authenticator /usr/local/bin/ecs-cli
 
@@ -93,78 +106,24 @@ COPY runtimes.yml /codebuild/image/config/runtimes.yml
 
 COPY dockerd-entrypoint.sh /usr/local/bin/
 
-#****************        PYTHON     *********************************************
-ENV PATH="/usr/local/bin:$PATH" \
-    GPG_KEY="0D96DF4D4110E5C43FBFB17F2D347EA6AA65421D" \
-    PYTHON_PIP_VERSION="19.2.3" \
-    LC_ALL=C.UTF-8 \
-    LANG=C.UTF-8
-
-RUN yum install -y tcl-devel tk-devel bzip2-devel gdbm-devel libuuid-devel \
-    && wget -O python.tar.xz "https://www.python.org/ftp/python/${PYTHON_VERSION%%[a-z]*}/Python-$PYTHON_VERSION.tar.xz" \
-    && wget -O python.tar.xz.asc "https://www.python.org/ftp/python/${PYTHON_VERSION%%[a-z]*}/Python-$PYTHON_VERSION.tar.xz.asc" \
-    && export GNUPGHOME="$(mktemp -d)" \
-    && (gpg --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys "$GPG_KEY" \
-        || gpg --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys "$GPG_KEY" \
-        || gpg --keyserver pgp.mit.edu --recv-keys "$GPG_KEY") \
-    && gpg --batch --verify python.tar.xz.asc python.tar.xz \
-    && rm -r "$GNUPGHOME" python.tar.xz.asc \
-    && mkdir -p /usr/src/python \
-    && tar -xJC /usr/src/python --strip-components=1 -f python.tar.xz \
-    && rm python.tar.xz \
-    \
-    && cd /usr/src/python \
-    && ./configure \
-        --enable-loadable-sqlite-extensions \
-        --enable-shared \
-    && make -j$(nproc) \
-    && make install \
-    && ln -s /usr/local/lib/libpython3.7m.so.1.0 /usr/lib/libpython3.7m.so.1.0 \
-    && ldconfig \
-# explicit path to "pip3" to ensure distribution-provided "pip3" cannot interfere
-    && if [ ! -e /usr/local/bin/pip3 ]; then : \
-        && wget -O /tmp/get-pip.py 'https://bootstrap.pypa.io/get-pip.py' \
-        && python3 /tmp/get-pip.py "pip==$PYTHON_PIP_VERSION" \
-        && rm /tmp/get-pip.py \
-    ; fi \
-# we use "--force-reinstall" for the case where the version of pip we're trying to install is the same as the version bundled with Python
-# ("Requirement already up-to-date: pip==8.1.2 in /usr/local/lib/python3.6/site-packages")
-# https://github.com/docker-library/python/pull/143#issuecomment-241032683
-    && pip3 install --no-cache-dir --upgrade --force-reinstall "pip==$PYTHON_PIP_VERSION" \
-        && pip install pipenv virtualenv --no-cache-dir \
-        && pip3 install --no-cache-dir --upgrade setuptools wheel \
-# then we use "pip list" to ensure we don't have more than one pip version installed
-# https://github.com/docker-library/python/pull/100
-    && [ "$(pip list |tac|tac| awk -F '[ ()]+' '$1 == "pip" { print $2; exit }')" = "$PYTHON_PIP_VERSION" ] \
-    \
-    && find /usr/local -depth \
-        \( \
-            \( -type d -a -name test -o -name tests \) \
-            -o \
-            \( -type f -a -name '*.pyc' -o -name '*.pyo' \) \
-        \) -exec rm -rf '{}' + \
-    && rm -rf /usr/src/python ~/.cache \
-    && cd /usr/local/bin \
-    && { [ -e easy_install ] || ln -s easy_install-* easy_install; } \
-    && ln -s idle3 idle \
-    && ln -s pydoc3 pydoc \
-    && ln -s python3 python \
-    && ln -s python3-config python-config \
-    && rm -fr /tmp/* /var/tmp/* \
-    && yum clean all
-#****************      END PYTHON     *********************************************
-
-ENV PATH="/root/.local/bin:$PATH"
-
+#**************** PYTHON *****************************************************
+ENV PYTHON_37_VERSION="3.7.6" \
+    PYTHON_PIP_VERSION="19.3.1"
+RUN curl https://pyenv.run | bash
+ENV PATH="/root/.pyenv/shims:/root/.pyenv/bin:$PATH"
+COPY tools/runtime_configs/python/$PYTHON_37_VERSION /root/.pyenv/plugins/python-build/share/python-build/$PYTHON_37_VERSION
 RUN set -ex \
-    && pip3 install --user aws-sam-cli \
-    && sam --version \
-    && pip3 install awscli boto3
+    && env PYTHON_CONFIGURE_OPTS="--enable-shared" pyenv install $PYTHON_37_VERSION \
+    && rm -rf /tmp/* \
+    && pyenv global $PYTHON_37_VERSION \
+    && pip3 install --no-cache-dir --upgrade --force-reinstall "pip==$PYTHON_PIP_VERSION" \
+    && pip3 install --no-cache-dir --upgrade "PyYAML==5.1.2" \
+    && pip3 install --no-cache-dir --upgrade setuptools wheel aws-sam-cli awscli boto3 pipenv virtualenv
 
 #****************     GO     **********************************************************
 ENV GOLANG_DOWNLOAD_SHA256="aed845e4185a0b2a3c3d5e1d0a35491702c55889192bb9c30e67a3de6849c067" \
     GOPATH="/go" \
-    DEP_VERSION="0.5.1" \
+    DEP_VERSION="0.5.4" \
     DEP_BINARY="dep-linux-amd64"
 
 RUN set -ex \
