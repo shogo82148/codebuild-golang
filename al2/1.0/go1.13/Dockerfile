@@ -60,6 +60,19 @@ RUN set -ex \
     && echo "$JQ_SHA256 /usr/local/bin/jq" | sha256sum -c - \
     && chmod +x /usr/local/bin/jq
 
+# Install Git
+RUN set -ex \
+   && GIT_VERSION=2.26.2 \
+   && GIT_TAR_FILE=git-$GIT_VERSION.tar.gz \
+   && GIT_SRC=https://github.com/git/git/archive/v${GIT_VERSION}.tar.gz  \
+   && curl -L -o $GIT_TAR_FILE $GIT_SRC \
+   && tar zxvf $GIT_TAR_FILE \
+   && cd git-$GIT_VERSION \
+   && make -j4 prefix=/usr \
+   && make install prefix=/usr \
+   && cd .. ; rm -rf git-$GIT_VERSION \
+   && rm -rf $GIT_TAR_FILE /tmp/*
+
 # Install Docker
 RUN set -ex \
     && curl -fSL "https://${DOCKER_BUCKET}/linux/static/${DOCKER_CHANNEL}/x86_64/docker-${DOCKER_VERSION}.tgz" -o docker.tgz \
