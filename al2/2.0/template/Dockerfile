@@ -34,24 +34,18 @@ RUN set -ex \
     && ssh-keyscan -t rsa,dsa -H bitbucket.org >> ~/.ssh/known_hosts \
     && chmod 600 ~/.ssh/known_hosts \
     && yum groupinstall -y "Development tools" \
-    && yum install -y wget fakeroot \
-       bzr mercurial procps-ng \
-       ImageMagick \
-       openssl-devel libdb-devel \
-       libevent-devel libffi-devel GeoIP-devel glib2-devel \
-       libjpeg-devel krb5-server xz-devel \
-       mariadb-devel \
-       ncurses-devel postgresql-devel readline-devel \
-       libsqlite3x-devel libwebp-devel \
-       libxml2-devel libxslt-devel libyaml-devel \
-       e2fsprogs iptables xfsprogs \
-       groff \
-       asciidoc cvs cvsps docbook-dtds docbook-style-xsl \
-       perl-DBD-SQLite perl-DBI perl-HTTP-Date \
-       perl-IO-Pty-Easy libserf subversion-perl tcl perl-TimeDate \
-       perl-YAML-LibYAML bzrtools python-configobj \
-       sgml-common xmlto libxslt \
-       tk expect parallel rsync \
+    && yum install -y \
+           GeoIP-devel ImageMagick asciidoc bzip2-devel bzr bzrtools cvs cvsps \
+           docbook-dtds docbook-style-xsl dpkg-dev e2fsprogs expat-devel expect fakeroot \
+           glib2-devel groff gzip icu iptables jq krb5-server libargon2-devel \
+           libcurl-devel libdb-devel libedit-devel libevent-devel libffi-devel \
+           libicu-devel libjpeg-devel libpng-devel libserf libsqlite3x-devel \
+           libtidy-devel libunwind libwebp-devel libxml2-devel libxslt libxslt-devel \
+           libyaml-devel libzip-devel mariadb-devel mercurial mlocate mono-devel \
+           ncurses-devel oniguruma-devel openssl openssl-devel perl-DBD-SQLite \
+           perl-DBI perl-HTTP-Date perl-IO-Pty-Easy perl-TimeDate perl-YAML-LibYAML \
+           postgresql-devel procps-ng python-configobj readline-devel rsync sgml-common \
+           subversion-perl tar tcl tk vim wget which xfsprogs xmlto xorg-x11-server-Xvfb xz-devel \
     && rm -rf /var/cache/yum/* \
     && yum clean all \
     && wget https://github.com/stedolan/jq/releases/download/jq-${JQ_VERSION}/jq-linux64 -O /usr/local/bin/jq \
