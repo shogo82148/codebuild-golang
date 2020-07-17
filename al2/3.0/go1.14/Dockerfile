@@ -72,8 +72,8 @@ ENV PATH="/root/.pyenv/shims:/root/.pyenv/bin:$PATH"
 FROM tools AS runtimes
 
 #****************     GO     **********************************************************
-ENV GOLANG_VERSION="1.14.5" \
-    GOLANG_DOWNLOAD_SHA256="82a1b84f16858db03231eb201f90cce2a991078dda543879b87e738e2586854b" \
+ENV GOLANG_VERSION="1.14.6" \
+    GOLANG_DOWNLOAD_SHA256="5c566ddc2e0bcfc25c26a5dc44a440fcc0177f7350c1f01952b34d5989a0d287" \
     GOPATH="/go" \
     DEP_VERSION="0.5.4" \
     DEP_BINARY="dep-linux-amd64"
