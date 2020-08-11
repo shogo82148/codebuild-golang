@@ -50,6 +50,7 @@ sub execute_template {
 execute_template 'template/Dockerfile', "$output/Dockerfile";
 execute_template 'template/ssh_config', "$output/ssh_config";
 execute_template 'template/dockerd-entrypoint.sh', "$output/dockerd-entrypoint.sh";
+execute_template 'template/runtimes.yml', "$output/runtimes.yml";
 mkdir "$output/tools";
 mkdir "$output/tools/runtime_configs";
 mkdir "$output/tools/runtime_configs/python";
