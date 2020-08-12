@@ -21,7 +21,6 @@ jobs:
         golang:
           - "1.15"
           - "1.14"
-          - "1.13"
     steps:
       - uses: actions/checkout@v2
       - run: echo "::set-env name=TAG::${{ secrets.username }}/codebuild-golang:${{ matrix.golang }}-standard-3.0"
