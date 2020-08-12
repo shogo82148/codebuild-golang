@@ -19,8 +19,9 @@ jobs:
       fail-fast: false
       matrix:
         golang:
-          - "1.13"
+          - "1.15"
           - "1.14"
+          - "1.13"
     steps:
       - uses: actions/checkout@v2
       - run: echo "::set-env name=TAG::${{ secrets.username }}/codebuild-golang:${{ matrix.golang }}-standard-4.0"
@@ -29,7 +30,7 @@ jobs:
         run: |
           docker build . --tag "$TAG"
         working-directory: "ubuntu/4.0/go${{ matrix.golang }}"
-    
+
       - name: Publish to the Docker Hub
         run: |
           printenv PASSWORD | docker login -u "$USERNAME" --password-stdin
