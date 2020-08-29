@@ -11,8 +11,7 @@
 
 FROM amazonlinux:2
 
-ENV GOLANG_VERSION="1.14.7" \
- PYTHON_VERSION="3.7.4" \
+ENV PYTHON_VERSION="3.7.4" \
  JQ_VERSION="1.6" \
  JQ_SHA256="af986793a515d500ab2d35f8d2aecd656e764504b789b66d7e1a0b727a124c44" \
  DOCKER_VERSION="18.09.6" \
@@ -121,7 +120,8 @@ RUN set -ex \
     && pip3 install --no-cache-dir --upgrade setuptools wheel aws-sam-cli awscli boto3 pipenv virtualenv
 
 #****************     GO     **********************************************************
-ENV GOLANG_DOWNLOAD_SHA256="4a7fa60f323ee1416a4b1425aefc37ea359e9d64df19c326a58953a97ad41ea5" \
+ENV GOLANG_VERSION="1.14.7" \
+    GOLANG_DOWNLOAD_SHA256="4a7fa60f323ee1416a4b1425aefc37ea359e9d64df19c326a58953a97ad41ea5" \
     GOPATH="/go" \
     DEP_VERSION="0.5.4" \
     DEP_BINARY="dep-linux-amd64"

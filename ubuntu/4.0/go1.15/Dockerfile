@@ -1,4 +1,4 @@
-FROM ubuntu:18.04 AS core
+FROM ubuntu:18.04
 
 ENV DEBIAN_FRONTEND="noninteractive" \
     JQ_VERSION="1.6" \
@@ -50,8 +50,6 @@ RUN useradd codebuild-user
 
 #=======================End of layer: core  =================
 
-FROM core AS tools
-
 # AWS Tools
 # https://docs.aws.amazon.com/eks/latest/userguide/install-aws-iam-authenticator.html https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ECS_CLI_installation.html
 RUN set -ex \
@@ -73,7 +71,6 @@ RUN curl https://pyenv.run | bash
 ENV PATH="/root/.pyenv/shims:/root/.pyenv/bin:$PATH"
 
 #=======================End of layer: tools  =================
-FROM tools AS runtimes
 
 #**************** PYTHON *****************************************************
 ENV PYTHON_38_VERSION="3.8.3" \
@@ -88,29 +85,6 @@ RUN set -ex \
     && pip3 install --no-cache-dir --upgrade setuptools wheel aws-sam-cli awscli boto3 pipenv virtualenv
 
 #**************** END PYTHON *****************************************************
-
-#****************     GO     **********************************************************
-ENV GOLANG_VERSION="1.15" \
-    GOLANG_DOWNLOAD_SHA256="2d75848ac606061efe52a8068d0e647b35ce487a15bb52272c427df485193602" \
-    GOPATH="/go" \
-    DEP_VERSION="0.5.4" \
-    DEP_BINARY="dep-linux-amd64"
-
-RUN set -ex \
-    && mkdir -p "$GOPATH/src" "$GOPATH/bin" \
-    && chmod -R 777 "$GOPATH" \
-    && apt-get update && apt-get install -y --no-install-recommends \
-        pkg-config \
-    && apt-get clean \
-    && wget "https://dl.google.com/go/go$GOLANG_VERSION.linux-amd64.tar.gz" -O /tmp/golang.tar.gz \
-    && echo "$GOLANG_DOWNLOAD_SHA256 /tmp/golang.tar.gz" | sha256sum -c - \
-    && tar -xzf /tmp/golang.tar.gz -C /usr/local \
-    && rm -fr /var/lib/apt/lists/* /tmp/* /var/tmp/* \
-    && wget "https://github.com/golang/dep/releases/download/v$DEP_VERSION/$DEP_BINARY" -O "$GOPATH/bin/dep" \
-    && chmod +x "$GOPATH/bin/dep"
-
-ENV PATH="$GOPATH/bin:/usr/local/go/bin:$PATH"
-#****************     END GO     **********************************************************
 
 #****************        DOCKER    *********************************************
 ENV DOCKER_BUCKET="download.docker.com" \
@@ -144,14 +118,35 @@ VOLUME /var/lib/docker
 
 #=======================End of layer: runtimes  =================
 
-FROM runtimes AS std_v4
-
 # Configure SSH
 COPY ssh_config /root/.ssh/config
 COPY runtimes.yml /codebuild/image/config/runtimes.yml
 COPY dockerd-entrypoint.sh /usr/local/bin/
 COPY amazon-ssm-agent.json          /etc/amazon/ssm/
 
-ENTRYPOINT ["dockerd-entrypoint.sh"]
-
 #=======================END of STD:4.0  =================
+
+#****************     GO     **********************************************************
+ENV GOLANG_VERSION="1.15" \
+    GOLANG_DOWNLOAD_SHA256="2d75848ac606061efe52a8068d0e647b35ce487a15bb52272c427df485193602" \
+    GOPATH="/go" \
+    DEP_VERSION="0.5.4" \
+    DEP_BINARY="dep-linux-amd64"
+
+RUN set -ex \
+    && mkdir -p "$GOPATH/src" "$GOPATH/bin" \
+    && chmod -R 777 "$GOPATH" \
+    && apt-get update && apt-get install -y --no-install-recommends \
+        pkg-config \
+    && apt-get clean \
+    && wget "https://dl.google.com/go/go$GOLANG_VERSION.linux-amd64.tar.gz" -O /tmp/golang.tar.gz \
+    && echo "$GOLANG_DOWNLOAD_SHA256 /tmp/golang.tar.gz" | sha256sum -c - \
+    && tar -xzf /tmp/golang.tar.gz -C /usr/local \
+    && rm -fr /var/lib/apt/lists/* /tmp/* /var/tmp/* \
+    && wget "https://github.com/golang/dep/releases/download/v$DEP_VERSION/$DEP_BINARY" -O "$GOPATH/bin/dep" \
+    && chmod +x "$GOPATH/bin/dep"
+
+ENV PATH="$GOPATH/bin:/usr/local/go/bin:$PATH"
+#****************     END GO     **********************************************************
+
+ENTRYPOINT ["dockerd-entrypoint.sh"]
