@@ -15,39 +15,16 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        golang:
-          - "1.15"
-          - "1.14"
     steps:
       - uses: actions/checkout@v2
-      - run: echo "::set-env name=TAG::${{ secrets.username }}/codebuild-golang:${{ matrix.golang }}-amazonlinux2-2.0"
-
-      - name: Build the Docker image
-        run: |
-          docker build . --tag "$TAG"
-        working-directory: "al2/2.0/go${{ matrix.golang }}"
-
-      - name: Publish to the Docker Hub
-        run: |
-          printenv PASSWORD | docker login -u "$USERNAME" --password-stdin
-          docker push "$TAG" || sleep "$(( $RANDOM % 60))" || docker push "$TAG" || sleep "$(( $RANDOM % 120))" || docker push "$TAG"
-          docker logout
+      - run: |
+          .github/build.sh 1.14
+          .github/build.sh 1.15
         env:
           USERNAME: ${{ secrets.username }}
           PASSWORD: ${{ secrets.password }}
-        if: github.ref == 'refs/heads/master'
-
-      - name: Publish to the GitHub package registry
-        run: |
-          docker tag "$TAG" "$PACKAGE"
-          printenv PASSWORD | docker login docker.pkg.github.com -u "$USERNAME" --password-stdin
-          docker push "$PACKAGE" || sleep "$(( $RANDOM % 60))" || docker push "$PACKAGE" || sleep "$(( $RANDOM % 120))" || docker push "$PACKAGE"
-          docker logout docker.pkg.github.com
-        env:
-          USERNAME: ${{ github.actor }}
-          PASSWORD: ${{ secrets.GITHUB_TOKEN }}
-          PACKAGE: "docker.pkg.github.com/${{ github.repository }}/go${{ matrix.golang }}-amazonlinux2-2.0:latest"
-        if: github.ref == 'refs/heads/master'
+          TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BASE_IMAGE: amazonlinux2
+          BASE_IMAGE_VERSION: "2.0"
+          WORKDIR: al2
+  
