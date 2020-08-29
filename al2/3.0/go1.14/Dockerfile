@@ -1,4 +1,4 @@
-FROM amazonlinux:2 AS core
+FROM amazonlinux:2
 
 ENV EPEL_REPO="https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm" \
     JQ_VERSION="1.6" \
@@ -36,8 +36,6 @@ RUN useradd codebuild-user
 
 #=======================End of layer: core  =================
 
-FROM core AS tools
-
 # Install Git
 RUN set -ex \
    && GIT_VERSION=2.27.0 \
@@ -68,28 +66,6 @@ RUN curl https://pyenv.run | bash
 ENV PATH="/root/.pyenv/shims:/root/.pyenv/bin:$PATH"
 
 #=======================End of layer: tools  =================
-
-FROM tools AS runtimes
-
-#****************     GO     **********************************************************
-ENV GOLANG_VERSION="1.14.7" \
-    GOLANG_DOWNLOAD_SHA256="4a7fa60f323ee1416a4b1425aefc37ea359e9d64df19c326a58953a97ad41ea5" \
-    GOPATH="/go" \
-    DEP_VERSION="0.5.4" \
-    DEP_BINARY="dep-linux-amd64"
-
-RUN set -ex \
-    && mkdir -p "$GOPATH/src" "$GOPATH/bin" \
-    && chmod -R 777 "$GOPATH" \
-    && wget "https://dl.google.com/go/go$GOLANG_VERSION.linux-amd64.tar.gz" -O /tmp/golang.tar.gz \
-    && echo "$GOLANG_DOWNLOAD_SHA256 /tmp/golang.tar.gz" | sha256sum -c - \
-    && tar -xzf /tmp/golang.tar.gz -C /usr/local \
-    && rm -fr /tmp/* /var/tmp/* \
-    && wget "https://github.com/golang/dep/releases/download/v$DEP_VERSION/$DEP_BINARY" -O "$GOPATH/bin/dep" \
-    && chmod +x "$GOPATH/bin/dep"
-
-ENV PATH="$GOPATH/bin:/usr/local/go/bin:$PATH"
-#****************     END GO     **********************************************************
 
 #Docker 19
 ENV DOCKER_BUCKET="download.docker.com" \
@@ -131,14 +107,32 @@ RUN set -ex \
 
 #=======================End of layer: runtimes_2  =================
 
-FROM runtimes AS al2_v3
-
 # Configure SSH
 COPY ssh_config /root/.ssh/config
 COPY runtimes.yml /codebuild/image/config/runtimes.yml
 COPY dockerd-entrypoint.sh /usr/local/bin/
 COPY amazon-ssm-agent.json          /etc/amazon/ssm/
 
-ENTRYPOINT ["dockerd-entrypoint.sh"]
-
 #=======================End of layer: al2_v3  =================
+
+#****************     GO     **********************************************************
+ENV GOLANG_VERSION="1.14.7" \
+    GOLANG_DOWNLOAD_SHA256="4a7fa60f323ee1416a4b1425aefc37ea359e9d64df19c326a58953a97ad41ea5" \
+    GOPATH="/go" \
+    DEP_VERSION="0.5.4" \
+    DEP_BINARY="dep-linux-amd64"
+
+RUN set -ex \
+    && mkdir -p "$GOPATH/src" "$GOPATH/bin" \
+    && chmod -R 777 "$GOPATH" \
+    && wget "https://dl.google.com/go/go$GOLANG_VERSION.linux-amd64.tar.gz" -O /tmp/golang.tar.gz \
+    && echo "$GOLANG_DOWNLOAD_SHA256 /tmp/golang.tar.gz" | sha256sum -c - \
+    && tar -xzf /tmp/golang.tar.gz -C /usr/local \
+    && rm -fr /tmp/* /var/tmp/* \
+    && wget "https://github.com/golang/dep/releases/download/v$DEP_VERSION/$DEP_BINARY" -O "$GOPATH/bin/dep" \
+    && chmod +x "$GOPATH/bin/dep"
+
+ENV PATH="$GOPATH/bin:/usr/local/go/bin:$PATH"
+#****************     END GO     **********************************************************
+
+ENTRYPOINT ["dockerd-entrypoint.sh"]
