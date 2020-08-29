@@ -20,6 +20,6 @@ if [[ ${GITHUB_REF} = 'refs/heads/master' ]]; then
     # Publish to the GitHub package registry
     printenv TOKEN | docker login docker.pkg.github.com -u "$USERNAME" --password-stdin
     docker tag "$TAG" "$PACKAGE"
-    docker push "docker.pkg.github.com/$GITHUB_REPOSITORY$PACKAGE"
+    docker push "$PACKAGE"
     docker logout docker.pkg.github.com
 fi
