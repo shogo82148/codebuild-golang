@@ -6,7 +6,7 @@ on:
       - ubuntu/2.0/*/*
       - .github/workflows/standard-2.0.yml
     branches:
-      - master
+      - main
   pull_request:
     paths:
       - ubuntu/2.0/*/*

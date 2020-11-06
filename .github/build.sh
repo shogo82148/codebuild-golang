@@ -11,7 +11,7 @@ PACKAGE=docker.pkg.github.com/${GITHUB_REPOSITORY}/go${GOVERSION}-${BASE_IMAGE}-
 cd "$ROOT"
 docker build "$WORKDIR/${BASE_IMAGE_VERSION}/go$GOVERSION" --tag "$TAG"
 
-if [[ ${GITHUB_REF} = 'refs/heads/master' ]]; then
+if [[ ${GITHUB_REF} = 'refs/heads/main' ]]; then
     # Publish to the Docker Hub
     printenv PASSWORD | docker login -u "$USERNAME" --password-stdin
     docker push "$TAG"

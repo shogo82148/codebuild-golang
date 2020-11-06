@@ -19,7 +19,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         with:
-          ref: master
+          ref: main
       - name: Checking Update
         uses: "docker://perl:5.30"
         with:
@@ -36,5 +36,5 @@ jobs:
           git commit -m "Update $(date +"%Y-%m-%d %H:%M:%S")" || exit 0
           git push -u origin $branch
           curl -H "Authorization: token $GITHUB_TOKEN" \
-            -d "$(jq --arg branch $branch -n '{ "title": "Auto Update", "base": "master", "head": $branch }')" \
+            -d "$(jq --arg branch $branch -n '{ "title": "Auto Update", "base": "main", "head": $branch }')" \
             "https://api.github.com/repos/$GITHUB_REPOSITORY/pulls"

@@ -6,7 +6,7 @@ on:
       - al2/3.0/*/*
       - .github/workflows/amazonlinux2-3.0.yml
     branches:
-      - master
+      - main
   pull_request:
     paths:
       - al2/3.0/*/*
