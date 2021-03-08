@@ -35,6 +35,11 @@ docker pull shogo82148/codebuild-golang:1.16-standard-4.0
 docker pull shogo82148/codebuild-golang:1.15-standard-4.0
 docker pull shogo82148/codebuild-golang:1.14-standard-4.0
 
+# standard 5.0 based
+docker pull shogo82148/codebuild-golang:1.16-standard-5.0
+docker pull shogo82148/codebuild-golang:1.15-standard-5.0
+docker pull shogo82148/codebuild-golang:1.14-standard-5.0
+
 # amazonlinux2-x86_64-standard 1.0 based
 docker pull shogo82148/codebuild-golang:1.16-amazonlinux2-1.0
 docker pull shogo82148/codebuild-golang:1.15-amazonlinux2-1.0
@@ -61,7 +66,7 @@ docker pull shogo82148/codebuild-golang:1.14-amazonlinux2-3.0
         Type: NO_ARTIFACTS
       Environment:
         ComputeType: BUILD_GENERAL1_SMALL
-        Image: shogo82148/codebuild-golang:1.16-standard-4.0
+        Image: shogo82148/codebuild-golang:1.16-standard-5.0
         Type: LINUX_CONTAINER
       ServiceRole: !GetAtt CodeBuildRole.Arn
       Source:
