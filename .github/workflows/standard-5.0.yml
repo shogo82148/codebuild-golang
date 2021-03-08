@@ -1,0 +1,30 @@
+name: standard-5.0
+
+on:
+  push:
+    paths:
+      - ubuntu/5.0/*/*
+      - .github/workflows/standard-5.0.yml
+    branches:
+      - main
+  pull_request:
+    paths:
+      - ubuntu/5.0/*/*
+      - .github/workflows/standard-5.0.yml
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: |
+          .github/build.sh 1.14
+          .github/build.sh 1.15
+          .github/build.sh 1.16
+        env:
+          USERNAME: ${{ secrets.username }}
+          PASSWORD: ${{ secrets.password }}
+          TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BASE_IMAGE: standard
+          BASE_IMAGE_VERSION: "5.0"
+          WORKDIR: ubuntu
