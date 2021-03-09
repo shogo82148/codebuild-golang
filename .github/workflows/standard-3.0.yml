@@ -18,7 +18,6 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - run: |
-          .github/build.sh 1.14
           .github/build.sh 1.15
           .github/build.sh 1.16
         env:
