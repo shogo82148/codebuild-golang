@@ -115,8 +115,8 @@ COPY ssh_config /root/.ssh/config
 COPY dockerd-entrypoint.sh /usr/local/bin/
 
 #****************     GO     **********************************************************
-ENV GOLANG_VERSION="1.15.12" \
-    GOLANG_DOWNLOAD_SHA256="bbdb935699e0b24d90e2451346da76121b2412d30930eabcd80907c230d098b7" \
+ENV GOLANG_VERSION="1.15.13" \
+    GOLANG_DOWNLOAD_SHA256="3d3beec5fc66659018e09f40abb7274b10794229ba7c1e8bdb7d8ca77b656a13" \
     GOPATH="/go"
 RUN set -ex \
     && mkdir -p "$GOPATH/src" "$GOPATH/bin" \
