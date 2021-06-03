@@ -3,13 +3,13 @@ name: standard-5.0
 on:
   push:
     paths:
-      - ubuntu/5.0/*/*
+      - ubuntu/5.0/**/*
       - .github/workflows/standard-5.0.yml
     branches:
       - main
   pull_request:
     paths:
-      - ubuntu/5.0/*/*
+      - ubuntu/5.0/**/*
       - .github/workflows/standard-5.0.yml
 
 jobs:

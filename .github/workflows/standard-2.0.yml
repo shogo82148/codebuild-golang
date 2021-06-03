@@ -3,13 +3,13 @@ name: standard-2.0
 on:
   push:
     paths:
-      - ubuntu/2.0/*/*
+      - ubuntu/2.0/**/*
       - .github/workflows/standard-2.0.yml
     branches:
       - main
   pull_request:
     paths:
-      - ubuntu/2.0/*/*
+      - ubuntu/2.0/**/*
       - .github/workflows/standard-2.0.yml
 
 jobs:
