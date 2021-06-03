@@ -54,7 +54,7 @@ execute_template 'template/runtimes.yml', "$output/runtimes.yml";
 mkdir "$output/tools";
 mkdir "$output/tools/runtime_configs";
 mkdir "$output/tools/runtime_configs/python";
-execute_template 'template/tools/runtime_configs/python/3.8.1', "$output/tools/runtime_configs/python/3.8.1";
+execute_template 'template/tools/runtime_configs/python/3.8.10', "$output/tools/runtime_configs/python/3.8.10";
 `chmod +x "$output/dockerd-entrypoint.sh"`;
 
 1;

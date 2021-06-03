@@ -54,7 +54,7 @@ execute_template 'template/dockerd-entrypoint.sh', "$output/dockerd-entrypoint.s
 execute_template 'template/runtimes.yml', "$output/runtimes.yml";
 execute_template 'template/amazon-ssm-agent.json', "$output/amazon-ssm-agent.json";
 system("mkdir", "-p", "$output/tools/runtime_configs/python");
-execute_template 'template/tools/runtime_configs/python/3.8.3', "$output/tools/runtime_configs/python/3.8.3";
+execute_template 'template/tools/runtime_configs/python/3.8.10', "$output/tools/runtime_configs/python/3.8.10";
 `chmod +x "$output/dockerd-entrypoint.sh"`;
 
 1;

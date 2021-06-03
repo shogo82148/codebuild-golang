@@ -55,7 +55,7 @@ execute_template 'template/amazon-ssm-agent.json', "$output/amazon-ssm-agent.jso
 mkdir "$output/tools";
 mkdir "$output/tools/runtime_configs";
 mkdir "$output/tools/runtime_configs/python";
-execute_template 'template/tools/runtime_configs/python/3.9.1', "$output/tools/runtime_configs/python/3.9.1";
+execute_template 'template/tools/runtime_configs/python/3.9.5', "$output/tools/runtime_configs/python/3.9.5";
 `chmod +x "$output/dockerd-entrypoint.sh"`;
 
 1;
