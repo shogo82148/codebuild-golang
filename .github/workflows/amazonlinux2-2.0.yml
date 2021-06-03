@@ -3,13 +3,13 @@ name: amazonlinux2-2.0
 on:
   push:
     paths:
-      - al2/2.0/*/*
+      - al2/2.0/**/*
       - .github/workflows/amazonlinux2-2.0.yml
     branches:
       - main
   pull_request:
     paths:
-      - al2/2.0/*/*
+      - al2/2.0/**/*
       - .github/workflows/amazonlinux2-2.0.yml
 
 jobs:
