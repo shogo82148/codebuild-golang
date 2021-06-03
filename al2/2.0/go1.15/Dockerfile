@@ -98,7 +98,7 @@ COPY runtimes.yml /codebuild/image/config/runtimes.yml
 COPY dockerd-entrypoint.sh /usr/local/bin/
 
 #**************** PYTHON *****************************************************
-ENV PYTHON_38_VERSION="3.8.1" \
+ENV PYTHON_38_VERSION="3.8.10" \
     PYTHON_PIP_VERSION="19.3.1"
 RUN curl https://pyenv.run | bash
 ENV PATH="/root/.pyenv/shims:/root/.pyenv/bin:$PATH"

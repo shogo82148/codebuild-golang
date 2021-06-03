@@ -94,7 +94,7 @@ RUN curl -sS -o /usr/local/bin/aws-iam-authenticator https://amazon-eks.s3-us-we
  && chmod +x /usr/local/bin/kubectl /usr/local/bin/aws-iam-authenticator /usr/local/bin/ecs-cli
 
 #**************** PYTHON *****************************************************
-ENV PYTHON_38_VERSION="3.8.1" \
+ENV PYTHON_38_VERSION="3.8.10" \
     PYTHON_PIP_VERSION="19.3.1"
 RUN curl https://pyenv.run | bash
 ENV PATH="/root/.pyenv/shims:/root/.pyenv/bin:$PATH"

@@ -73,7 +73,7 @@ ENV PATH="/root/.pyenv/shims:/root/.pyenv/bin:$PATH"
 #=======================End of layer: tools  =================
 
 #**************** PYTHON *****************************************************
-ENV PYTHON_38_VERSION="3.8.3" \
+ENV PYTHON_38_VERSION="3.8.10" \
     PYTHON_PIP_VERSION="19.3.1"
 COPY tools/runtime_configs/python/$PYTHON_38_VERSION /root/.pyenv/plugins/python-build/share/python-build/$PYTHON_38_VERSION
 RUN set -ex \
