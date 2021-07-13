@@ -21,7 +21,7 @@ jobs:
         with:
           ref: main
       - name: Checking Update
-        uses: "docker://perl:5.30"
+        uses: "docker://perl:5.34"
         with:
           args: bash -c "cpanm JSON && ./update.sh"
       - name: Commit
