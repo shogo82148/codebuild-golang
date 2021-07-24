@@ -103,7 +103,8 @@ RUN curl https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip -o /tmp/awscli
 
 #**************** PYTHON *****************************************************
 ENV PYTHON_39_VERSION="3.9.5" \
-    PYTHON_PIP_VERSION="20.3.3"
+    PYTHON_PIP_VERSION="21.1.2" \
+    PYYAML_VERSION="5.4.1"
 RUN curl https://pyenv.run | bash
 ENV PATH="/root/.pyenv/shims:/root/.pyenv/bin:$PATH"
 COPY tools/runtime_configs/python/$PYTHON_39_VERSION /root/.pyenv/plugins/python-build/share/python-build/$PYTHON_39_VERSION
@@ -112,7 +113,7 @@ RUN set -ex \
     && rm -rf /tmp/* \
     && pyenv global $PYTHON_39_VERSION \
     && pip3 install --no-cache-dir --upgrade --force-reinstall "pip==$PYTHON_PIP_VERSION" \
-    && pip3 install --no-cache-dir --upgrade "PyYAML==5.3.1" \
+    && pip3 install --no-cache-dir --upgrade "PyYAML==$PYYAML_VERSION" \
     && pip3 install --no-cache-dir --upgrade setuptools wheel aws-sam-cli boto3 pipenv virtualenv --use-feature=2020-resolver
 
 VOLUME /var/lib/docker
