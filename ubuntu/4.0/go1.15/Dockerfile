@@ -1,4 +1,4 @@
-FROM ubuntu:18.04
+FROM public.ecr.aws/ubuntu/ubuntu:18.04
 
 ENV DEBIAN_FRONTEND="noninteractive" \
     JQ_VERSION="1.6" \
