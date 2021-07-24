@@ -107,7 +107,8 @@ COPY dockerd-entrypoint.sh /usr/local/bin/
 
 #**************** PYTHON *****************************************************
 ENV PYTHON_37_VERSION="3.7.10" \
-    PYTHON_PIP_VERSION="19.3.1"
+    PYTHON_PIP_VERSION="21.1.2" \
+    PYYAML_VERSION="5.4.1"
 RUN curl https://pyenv.run | bash
 ENV PATH="/root/.pyenv/shims:/root/.pyenv/bin:$PATH"
 COPY tools/runtime_configs/python/$PYTHON_37_VERSION /root/.pyenv/plugins/python-build/share/python-build/$PYTHON_37_VERSION
@@ -116,7 +117,7 @@ RUN set -ex \
     && rm -rf /tmp/* \
     && pyenv global $PYTHON_37_VERSION \
     && pip3 install --no-cache-dir --upgrade --force-reinstall "pip==$PYTHON_PIP_VERSION" \
-    && pip3 install --no-cache-dir --upgrade "PyYAML==5.1.2" \
+    && pip3 install --no-cache-dir --upgrade "PyYAML==$PYYAML_VERSION" \
     && pip3 install --no-cache-dir --upgrade setuptools wheel aws-sam-cli awscli boto3 pipenv virtualenv
 
 #****************     GO     **********************************************************
