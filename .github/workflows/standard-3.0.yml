@@ -18,8 +18,9 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - run: |
-          .github/build.sh 1.15
+          .github/build.sh 1.17
           .github/build.sh 1.16
+          .github/build.sh 1.15
         env:
           USERNAME: ${{ secrets.username }}
           PASSWORD: ${{ secrets.password }}
