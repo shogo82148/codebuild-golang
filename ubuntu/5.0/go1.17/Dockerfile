@@ -119,8 +119,8 @@ RUN set -ex \
 VOLUME /var/lib/docker
 
 #****************     GO     **********************************************************
-ENV GOLANG_VERSION="1.17.5" \
-    GOLANG_DOWNLOAD_SHA256="bd78114b0d441b029c8fe0341f4910370925a4d270a6a590668840675b0c653e" \
+ENV GOLANG_VERSION="1.17.6" \
+    GOLANG_DOWNLOAD_SHA256="231654bbf2dab3d86c1619ce799e77b03d96f9b50770297c8f4dff8836fc8ca2" \
     GOPATH="/go" \
     DEP_VERSION="0.5.4" \
     DEP_BINARY="dep-linux-amd64"
