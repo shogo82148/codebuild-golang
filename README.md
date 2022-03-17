@@ -18,32 +18,22 @@ Docker Pull Command:
 # standard 5.0 based
 docker pull shogo82148/codebuild-golang:1.18-standard-5.0
 docker pull shogo82148/codebuild-golang:1.17-standard-5.0
-docker pull shogo82148/codebuild-golang:1.16-standard-5.0
-docker pull shogo82148/codebuild-golang:1.15-standard-5.0
 
 # standard 4.0 based
 docker pull shogo82148/codebuild-golang:1.18-standard-4.0
 docker pull shogo82148/codebuild-golang:1.17-standard-4.0
-docker pull shogo82148/codebuild-golang:1.16-standard-4.0
-docker pull shogo82148/codebuild-golang:1.15-standard-4.0
 
 # standard 3.0 based
 docker pull shogo82148/codebuild-golang:1.18-standard-3.0
 docker pull shogo82148/codebuild-golang:1.17-standard-3.0
-docker pull shogo82148/codebuild-golang:1.16-standard-3.0
-docker pull shogo82148/codebuild-golang:1.15-standard-3.0
 
 # amazonlinux2-x86_64-standard 3.0 based
 docker pull shogo82148/codebuild-golang:1.18-amazonlinux2-3.0
 docker pull shogo82148/codebuild-golang:1.17-amazonlinux2-3.0
-docker pull shogo82148/codebuild-golang:1.16-amazonlinux2-3.0
-docker pull shogo82148/codebuild-golang:1.15-amazonlinux2-3.0
 
 # amazonlinux2-x86_64-standard 2.0 based
 docker pull shogo82148/codebuild-golang:1.18-amazonlinux2-2.0
 docker pull shogo82148/codebuild-golang:1.17-amazonlinux2-2.0
-docker pull shogo82148/codebuild-golang:1.16-amazonlinux2-2.0
-docker pull shogo82148/codebuild-golang:1.15-amazonlinux2-2.0
 ```
 
 ### An Example of CloudFormation Template for Creating CodeBuild Project
