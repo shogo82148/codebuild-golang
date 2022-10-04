@@ -117,8 +117,8 @@ COPY amazon-ssm-agent.json          /etc/amazon/ssm/
 #=======================End of layer: al2_v3  =================
 
 #****************     GO     **********************************************************
-ENV GOLANG_VERSION="1.18.6" \
-    GOLANG_DOWNLOAD_SHA256="bb05f179a773fed60c6a454a24141aaa7e71edfd0f2d465ad610a3b8f1dc7fe8" \
+ENV GOLANG_VERSION="1.18.7" \
+    GOLANG_DOWNLOAD_SHA256="6c967efc22152ce3124fc35cdf50fc686870120c5fd2107234d05d450a6105d8" \
     GOPATH="/go" \
     DEP_VERSION="0.5.4" \
     DEP_BINARY="dep-linux-amd64"
