@@ -113,8 +113,8 @@ RUN set -ex \
     && pip3 install --no-cache-dir --upgrade setuptools wheel aws-sam-cli awscli boto3 pipenv virtualenv
 
 #****************     GO     **********************************************************
-ENV GOLANG_VERSION="1.20.11" \
-    GOLANG_DOWNLOAD_SHA256="ef79a11aa095a08772d2a69e4f152f897c4e96ee297b0dc20264b7dec2961abe" \
+ENV GOLANG_VERSION="1.20.12" \
+    GOLANG_DOWNLOAD_SHA256="9c5d48c54dd8b0a3b2ef91b0f92a1190aa01f11d26e98033efa64c46a30bba7b" \
     GOPATH="/go" \
     DEP_VERSION="0.5.4" \
     DEP_BINARY="dep-linux-amd64"
