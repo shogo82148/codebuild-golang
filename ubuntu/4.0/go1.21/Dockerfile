@@ -128,8 +128,8 @@ COPY amazon-ssm-agent.json          /etc/amazon/ssm/
 #=======================END of STD:4.0  =================
 
 #****************     GO     **********************************************************
-ENV GOLANG_VERSION="1.21.6" \
-    GOLANG_DOWNLOAD_SHA256="3f934f40ac360b9c01f616a9aa1796d227d8b0328bf64cb045c7b8c4ee9caea4" \
+ENV GOLANG_VERSION="1.21.7" \
+    GOLANG_DOWNLOAD_SHA256="13b76a9b2a26823e53062fa841b07087d48ae2ef2936445dc34c4ae03293702c" \
     GOPATH="/go" \
     DEP_VERSION="0.5.4" \
     DEP_BINARY="dep-linux-amd64"
