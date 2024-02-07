@@ -17,24 +17,24 @@ Docker Pull Command:
 
 ```bash
 # standard 5.0 based
+docker pull shogo82148/codebuild-golang:1.22-standard-5.0
 docker pull shogo82148/codebuild-golang:1.21-standard-5.0
-docker pull shogo82148/codebuild-golang:1.20-standard-5.0
 
 # standard 4.0 based
+docker pull shogo82148/codebuild-golang:1.22-standard-4.0
 docker pull shogo82148/codebuild-golang:1.21-standard-4.0
-docker pull shogo82148/codebuild-golang:1.20-standard-4.0
 
 # standard 3.0 based
+docker pull shogo82148/codebuild-golang:1.22-standard-3.0
 docker pull shogo82148/codebuild-golang:1.21-standard-3.0
-docker pull shogo82148/codebuild-golang:1.20-standard-3.0
 
 # amazonlinux2-x86_64-standard 3.0 based
+docker pull shogo82148/codebuild-golang:1.22-amazonlinux2-3.0
 docker pull shogo82148/codebuild-golang:1.21-amazonlinux2-3.0
-docker pull shogo82148/codebuild-golang:1.20-amazonlinux2-3.0
 
 # amazonlinux2-x86_64-standard 2.0 based
+docker pull shogo82148/codebuild-golang:1.22-amazonlinux2-2.0
 docker pull shogo82148/codebuild-golang:1.21-amazonlinux2-2.0
-docker pull shogo82148/codebuild-golang:1.20-amazonlinux2-2.0
 ```
 
 ### An Example of CloudFormation Template for Creating CodeBuild Project
@@ -47,7 +47,7 @@ CodeBuildProject:
       Type: NO_ARTIFACTS
     Environment:
       ComputeType: BUILD_GENERAL1_SMALL
-      Image: shogo82148/codebuild-golang:1.21-standard-5.0
+      Image: shogo82148/codebuild-golang:1.22-standard-5.0
       Type: LINUX_CONTAINER
     ServiceRole: !GetAtt CodeBuildRole.Arn
     Source:
