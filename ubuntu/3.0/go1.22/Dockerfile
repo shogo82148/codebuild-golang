@@ -118,8 +118,8 @@ COPY runtimes.yml /codebuild/image/config/runtimes.yml
 COPY dockerd-entrypoint.sh /usr/local/bin/
 
 #****************     GO     **********************************************************
-ENV GOLANG_VERSION="1.22.4" \
-    GOLANG_DOWNLOAD_SHA256="ba79d4526102575196273416239cca418a651e049c2b099f3159db85e7bade7d" \
+ENV GOLANG_VERSION="1.22.5" \
+    GOLANG_DOWNLOAD_SHA256="904b924d435eaea086515bc63235b192ea441bd8c9b198c507e85009e6e4c7f0" \
     GOPATH="/go" \
     DEP_VERSION="0.5.1" \
     DEP_BINARY="dep-linux-amd64"
